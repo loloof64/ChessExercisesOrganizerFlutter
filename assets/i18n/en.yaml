@@ -1,0 +1,6 @@
+home:
+    title: "Home"
+    play_button: "Play"
+game:
+    title: "Game"
+    go_back_home: "Go back to home"

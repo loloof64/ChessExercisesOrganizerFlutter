@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -10,13 +11,13 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  ChessBoardController _controller = ChessBoardController();
+  final ChessBoardController _controller = ChessBoardController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Game'),
+        title: I18nText('game.title'),
       ),
       body: Center(
           child: Column(
@@ -26,7 +27,7 @@ class _GameScreenState extends State<GameScreen> {
             onPressed: () {
               GoRouter.of(context).go('/');
             },
-            child: const Text('Go back to home'),
+            child: I18nText('game.go_back_home'),
           )
         ],
       )),

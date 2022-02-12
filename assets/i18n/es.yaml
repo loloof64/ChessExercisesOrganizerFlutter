@@ -1,0 +1,6 @@
+home:
+    title: "Acogida"
+    play_button: "Jugar"
+game:
+    title: "Juego"
+    go_back_home: "Volver a acogida"

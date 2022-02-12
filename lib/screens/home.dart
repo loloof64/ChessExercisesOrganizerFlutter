@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,11 +14,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(
+          FlutterI18n.translate(
+            context,
+            'home.title',
+          ),
+        ),
       ),
       body: Center(
         child: ElevatedButton(
-          child: const Text('Play game'),
+          child: I18nText('home.play_button'),
           onPressed: () {
             GoRouter.of(context).go('/game');
           },
