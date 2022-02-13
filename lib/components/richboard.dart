@@ -1,23 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
+import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 
 class RichChessboard extends StatelessWidget {
   final String fen;
   final double size;
   final void Function(ShortMove move) onMove;
-  final Future<PieceType?> Function() onPromote;
   final BoardColor orientation;
   final List<String> lastMoveToHighlight;
+  final Widget promotionChooserTitle;
 
   const RichChessboard({
     Key? key,
     required this.fen,
     required this.size,
     required this.onMove,
-    required this.onPromote,
     required this.orientation,
+    required this.promotionChooserTitle,
     this.lastMoveToHighlight = const [],
   }) : super(key: key);
+
+  Future<PieceType?> _showPromotionDialog(BuildContext context) {
+    final pieceSize = size * 0.15;
+    final whiteTurn = fen.split(' ')[1] == 'w';
+    return showDialog<PieceType>(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: promotionChooserTitle,
+            alignment: Alignment.center,
+            content: FittedBox(
+              child: Row(
+                children: [
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteQueen(size: pieceSize)
+                        : BlackQueen(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteRook(size: pieceSize)
+                        : BlackRook(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.ROOK),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteBishop(size: pieceSize)
+                        : BlackBishop(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteKnight(size: pieceSize)
+                        : BlackKnight(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +150,7 @@ class RichChessboard extends StatelessWidget {
           fen: fen,
           size: size * 0.9,
           onMove: onMove,
-          onPromote: onPromote,
+          onPromote: () => _showPromotionDialog(context),
           orientation: orientation,
           lastMoveHighlightColor: Colors.indigoAccent.shade200,
           selectionHighlightColor: Colors.greenAccent,
