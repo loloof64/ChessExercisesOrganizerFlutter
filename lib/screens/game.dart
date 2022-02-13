@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:go_router/go_router.dart';
@@ -97,27 +96,39 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
+    final isInLandscapeMode =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    final content = <Widget>[
+      Chessboard(
+        fen: _chess.fen,
+        size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+        onMove: _tryMakingMove,
+        onPromote: () => _showPromotionDialog(context),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          GoRouter.of(context).go('/');
+        },
+        child: I18nText('game.go_back_home'),
+      )
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: I18nText('game.title'),
       ),
       body: Center(
-          child: Column(
-        children: [
-          Chessboard(
-            fen: _chess.fen,
-            size: minScreenSize,
-            onMove: _tryMakingMove,
-            onPromote: () => _showPromotionDialog(context),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              GoRouter.of(context).go('/');
-            },
-            child: I18nText('game.go_back_home'),
-          )
-        ],
-      )),
+        child: isInLandscapeMode
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: content,
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: content,
+              ),
+      ),
     );
   }
 }

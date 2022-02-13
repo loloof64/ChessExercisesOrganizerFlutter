@@ -1,4 +1,4 @@
-# chess_exercises_organizer
+# Chess exercises organizer
 
 Load your chess exercises and train yourself against the device.
 
