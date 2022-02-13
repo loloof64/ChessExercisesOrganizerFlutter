@@ -17,9 +17,10 @@
 */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import "package:chess/chess.dart" as chesslib;
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -29,10 +30,28 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  final ChessBoardController _controller = ChessBoardController();
+  var _chess = new chesslib.Chess();
+
+  void _tryMakingMove(ShortMove move) {
+    final success = _chess.move(<String, String?>{
+      'from': move.from,
+      'to': move.to,
+      'promotion': move.promotion.match(
+        (piece) => piece.name,
+        () => null,
+      ),
+    });
+    if (success) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final minScreenSize =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
     return Scaffold(
       appBar: AppBar(
         title: I18nText('game.title'),
@@ -40,7 +59,13 @@ class _GameScreenState extends State<GameScreen> {
       body: Center(
           child: Column(
         children: [
-          ChessBoard(controller: _controller),
+          Chessboard(
+            fen: _chess.fen,
+            size: minScreenSize,
+            onMove: (move) {
+              _tryMakingMove(move);
+            },
+          ),
           ElevatedButton(
             onPressed: () {
               GoRouter.of(context).go('/');
