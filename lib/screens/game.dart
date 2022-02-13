@@ -31,6 +31,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   var _chess = new chesslib.Chess();
+  var _blackAtBottom = true;
 
   void _tryMakingMove(ShortMove move) {
     final success = _chess.move(<String, String?>{
@@ -99,6 +100,12 @@ class _GameScreenState extends State<GameScreen> {
     return MediaQuery.of(context).orientation == Orientation.landscape;
   }
 
+  void _toggleBoardOrientation() {
+    setState(() {
+      _blackAtBottom = !_blackAtBottom;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
@@ -112,6 +119,7 @@ class _GameScreenState extends State<GameScreen> {
         size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
         onMove: _tryMakingMove,
         onPromote: () => _showPromotionDialog(context),
+        orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
       ),
       Column(
         children: [
@@ -135,6 +143,12 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       appBar: AppBar(
         title: I18nText('game.title'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.swap_vert),
+            onPressed: _toggleBoardOrientation,
+          ),
+        ],
       ),
       body: Center(
         child: isInLandscapeMode
