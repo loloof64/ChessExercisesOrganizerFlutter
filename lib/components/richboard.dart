@@ -7,6 +7,7 @@ class RichChessboard extends StatelessWidget {
   final void Function(ShortMove move) onMove;
   final Future<PieceType?> Function() onPromote;
   final BoardColor orientation;
+  final List<String> lastMoveToHighlight;
 
   const RichChessboard({
     Key? key,
@@ -15,6 +16,7 @@ class RichChessboard extends StatelessWidget {
     required this.onMove,
     required this.onPromote,
     required this.orientation,
+    this.lastMoveToHighlight = const [],
   }) : super(key: key);
 
   @override
@@ -106,6 +108,9 @@ class RichChessboard extends StatelessWidget {
           onMove: onMove,
           onPromote: onPromote,
           orientation: orientation,
+          lastMoveHighlightColor: Colors.indigoAccent.shade200,
+          selectionHighlightColor: Colors.greenAccent,
+          lastMove: lastMoveToHighlight,
         ),
       ],
     );

@@ -33,6 +33,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   var _chess = new chesslib.Chess();
   var _blackAtBottom = true;
+  var _lastMove = <String>[];
 
   void _tryMakingMove(ShortMove move) {
     final success = _chess.move(<String, String?>{
@@ -44,7 +45,11 @@ class _GameScreenState extends State<GameScreen> {
       ),
     });
     if (success) {
-      setState(() {});
+      setState(() {
+        _lastMove.clear();
+        _lastMove.add(move.from);
+        _lastMove.add(move.to);
+      });
     }
   }
 
@@ -111,8 +116,6 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
     final isInLandscapeMode = _isInLandscapeMode(context);
-    final isWhiteTurn = _chess.turn == chesslib.Color.WHITE;
-    final turnSize = minScreenSize * 0.05;
 
     final content = <Widget>[
       RichChessboard(
@@ -121,6 +124,7 @@ class _GameScreenState extends State<GameScreen> {
         onMove: _tryMakingMove,
         onPromote: () => _showPromotionDialog(context),
         orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
+        lastMoveToHighlight: _lastMove,
       ),
       Column(
         children: [
