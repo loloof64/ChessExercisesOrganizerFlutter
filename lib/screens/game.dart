@@ -55,33 +55,35 @@ class _GameScreenState extends State<GameScreen> {
           return AlertDialog(
             title: I18nText('game.choose_promotion_title'),
             alignment: Alignment.center,
-            content: Row(
-              children: [
-                InkWell(
-                  child: whitePieces
-                      ? WhiteQueen(size: pieceSize)
-                      : BlackQueen(size: pieceSize),
-                  onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
-                ),
-                InkWell(
-                  child: whitePieces
-                      ? WhiteRook(size: pieceSize)
-                      : BlackRook(size: pieceSize),
-                  onTap: () => Navigator.of(context).pop(PieceType.ROOK),
-                ),
-                InkWell(
-                  child: whitePieces
-                      ? WhiteBishop(size: pieceSize)
-                      : BlackBishop(size: pieceSize),
-                  onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
-                ),
-                InkWell(
-                  child: whitePieces
-                      ? WhiteKnight(size: pieceSize)
-                      : BlackKnight(size: pieceSize),
-                  onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
-                ),
-              ],
+            content: FittedBox(
+              child: Row(
+                children: [
+                  InkWell(
+                    child: whitePieces
+                        ? WhiteQueen(size: pieceSize)
+                        : BlackQueen(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
+                  ),
+                  InkWell(
+                    child: whitePieces
+                        ? WhiteRook(size: pieceSize)
+                        : BlackRook(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.ROOK),
+                  ),
+                  InkWell(
+                    child: whitePieces
+                        ? WhiteBishop(size: pieceSize)
+                        : BlackBishop(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
+                  ),
+                  InkWell(
+                    child: whitePieces
+                        ? WhiteKnight(size: pieceSize)
+                        : BlackKnight(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
+                  ),
+                ],
+              ),
             ),
           );
         });
