@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 
-class RichChessboard extends StatefulWidget {
+class RichChessboard extends StatelessWidget {
   final String fen;
   final double size;
   final void Function(ShortMove move) onMove;
@@ -18,24 +18,18 @@ class RichChessboard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _RichChessboardState createState() => _RichChessboardState();
-}
-
-class _RichChessboardState extends State<RichChessboard> {
-  @override
   Widget build(BuildContext context) {
     final commonTextStyle = TextStyle(
       color: Colors.yellow.shade400,
       fontWeight: FontWeight.bold,
-      fontSize: widget.size * 0.04,
+      fontSize: size * 0.04,
     );
     final topFilesCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
-      final letterOffset =
-          widget.orientation == BoardColor.WHITE ? file : 7 - file;
+      final letterOffset = orientation == BoardColor.WHITE ? file : 7 - file;
       final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
       return Positioned(
-        top: widget.size * 0.005,
-        left: widget.size * (0.09 + 0.113 * file),
+        top: size * 0.005,
+        left: size * (0.09 + 0.113 * file),
         child: Text(
           letter,
           style: commonTextStyle,
@@ -44,12 +38,11 @@ class _RichChessboardState extends State<RichChessboard> {
     });
 
     final bottomFilesCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
-      final letterOffset =
-          widget.orientation == BoardColor.WHITE ? file : 7 - file;
+      final letterOffset = orientation == BoardColor.WHITE ? file : 7 - file;
       final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
       return Positioned(
-        bottom: widget.size * 0.003,
-        left: widget.size * (0.09 + 0.113 * file),
+        bottom: size * 0.003,
+        left: size * (0.09 + 0.113 * file),
         child: Text(
           letter,
           style: commonTextStyle,
@@ -58,12 +51,11 @@ class _RichChessboardState extends State<RichChessboard> {
     });
 
     final leftRanksCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
-      final letterOffset =
-          widget.orientation == BoardColor.WHITE ? 7 - rank : rank;
+      final letterOffset = orientation == BoardColor.WHITE ? 7 - rank : rank;
       final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
       return Positioned(
-        left: widget.size * 0.012,
-        top: widget.size * (0.09 + 0.113 * rank),
+        left: size * 0.012,
+        top: size * (0.09 + 0.113 * rank),
         child: Text(
           letter,
           style: commonTextStyle,
@@ -72,12 +64,11 @@ class _RichChessboardState extends State<RichChessboard> {
     });
 
     final rightRanksCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
-      final letterOffset =
-          widget.orientation == BoardColor.WHITE ? 7 - rank : rank;
+      final letterOffset = orientation == BoardColor.WHITE ? 7 - rank : rank;
       final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
       return Positioned(
-        right: widget.size * 0.012,
-        top: widget.size * (0.09 + 0.113 * rank),
+        right: size * 0.012,
+        top: size * (0.09 + 0.113 * rank),
         child: Text(
           letter,
           style: commonTextStyle,
@@ -85,11 +76,11 @@ class _RichChessboardState extends State<RichChessboard> {
       );
     });
 
-    final isWhiteTurn = widget.fen.split(' ')[1] == 'w';
+    final isWhiteTurn = fen.split(' ')[1] == 'w';
     final playerTurn = Positioned(
-      child: _PlayerTurn(size: widget.size * 0.05, whiteTurn: isWhiteTurn),
-      bottom: widget.size * 0.001,
-      right: widget.size * 0.001,
+      child: _PlayerTurn(size: size * 0.05, whiteTurn: isWhiteTurn),
+      bottom: size * 0.001,
+      right: size * 0.001,
     );
 
     return Stack(
@@ -97,8 +88,8 @@ class _RichChessboardState extends State<RichChessboard> {
       children: [
         Container(
           color: Colors.indigo.shade300,
-          width: widget.size,
-          height: widget.size,
+          width: size,
+          height: size,
           child: Stack(
             children: [
               ...topFilesCoordinates,
@@ -110,11 +101,11 @@ class _RichChessboardState extends State<RichChessboard> {
           ),
         ),
         Chessboard(
-          fen: widget.fen,
-          size: widget.size * 0.9,
-          onMove: widget.onMove,
-          onPromote: widget.onPromote,
-          orientation: widget.orientation,
+          fen: fen,
+          size: size * 0.9,
+          onMove: onMove,
+          onPromote: onPromote,
+          orientation: orientation,
         ),
       ],
     );
