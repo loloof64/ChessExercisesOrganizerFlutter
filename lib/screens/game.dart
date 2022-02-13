@@ -21,6 +21,7 @@ import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
+import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -46,12 +47,56 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<PieceType?> _showPromotionDialog(BuildContext context) {
+    final pieceSize = _getMinScreenSize(context) * 0.15;
+    final whitePieces = _chess.turn == chesslib.Color.WHITE;
+    return showDialog<PieceType>(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: I18nText('game.choose_promotion_title'),
+            alignment: Alignment.center,
+            content: Row(
+              children: [
+                InkWell(
+                  child: whitePieces
+                      ? WhiteQueen(size: pieceSize)
+                      : BlackQueen(size: pieceSize),
+                  onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
+                ),
+                InkWell(
+                  child: whitePieces
+                      ? WhiteRook(size: pieceSize)
+                      : BlackRook(size: pieceSize),
+                  onTap: () => Navigator.of(context).pop(PieceType.ROOK),
+                ),
+                InkWell(
+                  child: whitePieces
+                      ? WhiteBishop(size: pieceSize)
+                      : BlackBishop(size: pieceSize),
+                  onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
+                ),
+                InkWell(
+                  child: whitePieces
+                      ? WhiteKnight(size: pieceSize)
+                      : BlackKnight(size: pieceSize),
+                  onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  double _getMinScreenSize(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final minScreenSize =
-        screenWidth < screenHeight ? screenWidth : screenHeight;
+    return screenWidth < screenHeight ? screenWidth : screenHeight;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final minScreenSize = _getMinScreenSize(context);
     return Scaffold(
       appBar: AppBar(
         title: I18nText('game.title'),
@@ -62,9 +107,8 @@ class _GameScreenState extends State<GameScreen> {
           Chessboard(
             fen: _chess.fen,
             size: minScreenSize,
-            onMove: (move) {
-              _tryMakingMove(move);
-            },
+            onMove: _tryMakingMove,
+            onPromote: () => _showPromotionDialog(context),
           ),
           ElevatedButton(
             onPressed: () {

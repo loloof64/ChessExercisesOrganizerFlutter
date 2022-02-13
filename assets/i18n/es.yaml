@@ -4,3 +4,4 @@ home:
 game:
     title: "Juego"
     go_back_home: "Volver a acogida"
+    choose_promotion_title: "Elige la pieza de promoción"
