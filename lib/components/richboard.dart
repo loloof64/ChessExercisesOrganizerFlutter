@@ -85,6 +85,13 @@ class _RichChessboardState extends State<RichChessboard> {
       );
     });
 
+    final isWhiteTurn = widget.fen.split(' ')[1] == 'w';
+    final playerTurn = Positioned(
+      child: _PlayerTurn(size: widget.size * 0.05, whiteTurn: isWhiteTurn),
+      bottom: widget.size * 0.001,
+      right: widget.size * 0.001,
+    );
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -98,6 +105,7 @@ class _RichChessboardState extends State<RichChessboard> {
               ...bottomFilesCoordinates,
               ...leftRanksCoordinates,
               ...rightRanksCoordinates,
+              playerTurn,
             ],
           ),
         ),
@@ -109,6 +117,33 @@ class _RichChessboardState extends State<RichChessboard> {
           orientation: widget.orientation,
         ),
       ],
+    );
+  }
+}
+
+class _PlayerTurn extends StatelessWidget {
+  final double size;
+  final bool whiteTurn;
+
+  const _PlayerTurn({Key? key, required this.size, required this.whiteTurn})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      margin: EdgeInsets.only(
+        left: 10,
+      ),
+      decoration: BoxDecoration(
+        color: whiteTurn ? Colors.white : Colors.black,
+        border: Border.all(
+          width: 0.7,
+          color: Colors.black,
+        ),
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

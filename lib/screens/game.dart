@@ -124,13 +124,6 @@ class _GameScreenState extends State<GameScreen> {
       ),
       Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              I18nText('game.player_turn'),
-              PlayerTurn(size: turnSize, whiteTurn: isWhiteTurn)
-            ],
-          ),
           ElevatedButton(
             onPressed: () {
               GoRouter.of(context).go('/');
@@ -161,33 +154,6 @@ class _GameScreenState extends State<GameScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: content,
               ),
-      ),
-    );
-  }
-}
-
-class PlayerTurn extends StatelessWidget {
-  final double size;
-  final bool whiteTurn;
-
-  const PlayerTurn({Key? key, required this.size, required this.whiteTurn})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      margin: EdgeInsets.only(
-        left: 10,
-      ),
-      decoration: BoxDecoration(
-        color: whiteTurn ? Colors.white : Colors.black,
-        border: Border.all(
-          width: 0.7,
-          color: Colors.black,
-        ),
-        shape: BoxShape.circle,
       ),
     );
   }
