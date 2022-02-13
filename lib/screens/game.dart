@@ -21,6 +21,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
+import 'package:chess_exercises_organizer/components/richboard.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -114,7 +115,7 @@ class _GameScreenState extends State<GameScreen> {
     final turnSize = minScreenSize * 0.05;
 
     final content = <Widget>[
-      Chessboard(
+      RichChessboard(
         fen: _chess.fen,
         size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
         onMove: _tryMakingMove,
