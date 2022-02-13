@@ -95,11 +95,16 @@ class _GameScreenState extends State<GameScreen> {
     return screenWidth < screenHeight ? screenWidth : screenHeight;
   }
 
+  bool _isInLandscapeMode(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+
   @override
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
-    final isInLandscapeMode =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final isInLandscapeMode = _isInLandscapeMode(context);
+    final isWhiteTurn = _chess.turn == chesslib.Color.WHITE;
+    final turnSize = minScreenSize * 0.05;
 
     final content = <Widget>[
       Chessboard(
@@ -108,12 +113,37 @@ class _GameScreenState extends State<GameScreen> {
         onMove: _tryMakingMove,
         onPromote: () => _showPromotionDialog(context),
       ),
-      ElevatedButton(
-        onPressed: () {
-          GoRouter.of(context).go('/');
-        },
-        child: I18nText('game.go_back_home'),
-      )
+      Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              I18nText('game.player_turn'),
+              Container(
+                width: turnSize,
+                height: turnSize,
+                margin: EdgeInsets.only(
+                  left: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: isWhiteTurn ? Colors.white : Colors.black,
+                  border: Border.all(
+                    width: 0.7,
+                    color: Colors.black,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+              )
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {
+              GoRouter.of(context).go('/');
+            },
+            child: I18nText('game.go_back_home'),
+          )
+        ],
+      ),
     ];
 
     return Scaffold(
