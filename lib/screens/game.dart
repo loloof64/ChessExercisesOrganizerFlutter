@@ -31,10 +31,10 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   var _chess = new chesslib.Chess();
-  var _blackAtBottom = true;
+  var _blackAtBottom = false;
   var _lastMove = <String>[];
 
-  void _tryMakingMove(ShortMove move) {
+  void _tryMakingMove({required ShortMove move}) {
     final success = _chess.move(<String, String?>{
       'from': move.from,
       'to': move.to,
@@ -79,6 +79,8 @@ class _GameScreenState extends State<GameScreen> {
         size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
         onMove: _tryMakingMove,
         orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
+        whitePlayerType: PlayerType.human,
+        blackPlayerType: PlayerType.computer,
         lastMoveToHighlight: _lastMove,
         promotionChooserTitle: I18nText('game.choose_promotion_title'),
       ),

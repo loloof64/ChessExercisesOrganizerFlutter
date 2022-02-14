@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 
+enum PlayerType {
+  human,
+  computer,
+}
+
 class RichChessboard extends StatelessWidget {
   final String fen;
   final double size;
-  final void Function(ShortMove move) onMove;
+  final void Function({required ShortMove move}) onMove;
   final BoardColor orientation;
   final List<String> lastMoveToHighlight;
   final Widget promotionChooserTitle;
+  final PlayerType whitePlayerType;
+  final PlayerType blackPlayerType;
 
   const RichChessboard({
     Key? key,
@@ -17,6 +24,8 @@ class RichChessboard extends StatelessWidget {
     required this.onMove,
     required this.orientation,
     required this.promotionChooserTitle,
+    required this.whitePlayerType,
+    required this.blackPlayerType,
     this.lastMoveToHighlight = const [],
   }) : super(key: key);
 
@@ -61,6 +70,16 @@ class RichChessboard extends StatelessWidget {
             ),
           );
         });
+  }
+
+  void _processMove(ShortMove move) {
+    final whiteTurn = fen.split(' ')[1] == 'w';
+    final currentPlayerIsHuman =
+        (whitePlayerType == PlayerType.human && whiteTurn) ||
+            (blackPlayerType == PlayerType.human && !whiteTurn);
+    if (currentPlayerIsHuman) {
+      onMove(move: move);
+    }
   }
 
   @override
@@ -149,7 +168,7 @@ class RichChessboard extends StatelessWidget {
         Chessboard(
           fen: fen,
           size: size * 0.9,
-          onMove: onMove,
+          onMove: _processMove,
           onPromote: () => _showPromotionDialog(context),
           orientation: orientation,
           lastMoveHighlightColor: Colors.indigoAccent.shade200,
