@@ -17,6 +17,12 @@ class RichChessboard extends StatelessWidget {
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
 
+  bool _currentPlayerIsHuman() {
+    final whiteTurn = fen.split(' ')[1] == 'w';
+    return (whitePlayerType == PlayerType.human && whiteTurn) ||
+        (blackPlayerType == PlayerType.human && !whiteTurn);
+  }
+
   const RichChessboard({
     Key? key,
     required this.fen,
@@ -73,11 +79,7 @@ class RichChessboard extends StatelessWidget {
   }
 
   void _processMove(ShortMove move) {
-    final whiteTurn = fen.split(' ')[1] == 'w';
-    final currentPlayerIsHuman =
-        (whitePlayerType == PlayerType.human && whiteTurn) ||
-            (blackPlayerType == PlayerType.human && !whiteTurn);
-    if (currentPlayerIsHuman) {
+    if (_currentPlayerIsHuman()) {
       onMove(move: move);
     }
   }
@@ -174,6 +176,11 @@ class RichChessboard extends StatelessWidget {
           lastMoveHighlightColor: Colors.indigoAccent.shade200,
           selectionHighlightColor: Colors.greenAccent,
           lastMove: lastMoveToHighlight,
+        ),
+        SizedBox(
+          width: _currentPlayerIsHuman() ? 1 : size,
+          height: _currentPlayerIsHuman() ? 1 : size,
+          child: Text(''),
         ),
       ],
     );
