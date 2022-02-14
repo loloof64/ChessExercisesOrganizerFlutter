@@ -34,6 +34,61 @@ class _GameScreenState extends State<GameScreen> {
   var _blackAtBottom = false;
   var _lastMove = <String>[];
 
+  void _restartGame() {
+    setState(() {
+      _chess = new chesslib.Chess();
+      _lastMove.clear();
+    });
+  }
+
+  void _purposeRestartGame(BuildContext context) {
+    void closeDialog() {
+      Navigator.of(context).pop();
+    }
+
+    void doStartNewGame() {
+      closeDialog();
+      _restartGame();
+    }
+
+    final isStartPosition = _chess.fen == chesslib.Chess.DEFAULT_POSITION;
+    if (isStartPosition) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext innerCtx) {
+        return AlertDialog(
+          title: I18nText('game.restart_game_title'),
+          content: I18nText('game.restart_game_msg'),
+          actions: [
+            ElevatedButton(
+              onPressed: doStartNewGame,
+              child: I18nText(
+                'buttons.ok',
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.teal,
+                textStyle: TextStyle(color: Colors.white),
+                elevation: 5,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: closeDialog,
+              child: I18nText(
+                'buttons.cancel',
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.redAccent,
+                textStyle: TextStyle(color: Colors.white),
+                elevation: 5,
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   void _tryMakingMove({required ShortMove move}) {
     final success = _chess.move(<String, String?>{
       'from': move.from,
@@ -100,6 +155,12 @@ class _GameScreenState extends State<GameScreen> {
       appBar: AppBar(
         title: I18nText('game.title'),
         actions: [
+          IconButton(
+            onPressed: () => _purposeRestartGame(context),
+            icon: Icon(
+              Icons.restart_alt_outlined,
+            ),
+          ),
           IconButton(
             icon: Icon(Icons.swap_vert),
             onPressed: _toggleBoardOrientation,

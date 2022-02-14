@@ -1,3 +1,6 @@
+buttons:
+    ok: "OK"
+    cancel: "Cancel"
 home:
     title: "Home"
     play_button: "Play"
@@ -6,3 +9,5 @@ game:
     go_back_home: "Go back to home"
     choose_promotion_title: "Choose the promotion piece"
     player_turn: "Turn"
+    restart_game_title: "New game ?"
+    restart_game_msg: "Do you want to finish current game and start a new one ?"

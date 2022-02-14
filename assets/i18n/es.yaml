@@ -1,3 +1,6 @@
+buttons:
+    ok: "De acuerdo"
+    cancel: "Cancelar"
 home:
     title: "Acogida"
     play_button: "Jugar"
@@ -6,3 +9,5 @@ game:
     go_back_home: "Volver a acogida"
     choose_promotion_title: "Elige la pieza de promoción"
     player_turn: "Turno"
+    restart_game_title: "¿Nueva partida?"
+    restart_game_msg: "¿Quiere detener el juego actual y comenzar uno nuevo?"
