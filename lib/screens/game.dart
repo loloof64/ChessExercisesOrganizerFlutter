@@ -21,18 +21,103 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
 import 'package:chess_exercises_organizer/components/richboard.dart';
+import 'package:stockfish/stockfish.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({Key? key}) : super(key: key);
+  final int cpuThinkingTimeMs;
+  final String startFen;
+  const GameScreen({
+    Key? key,
+    this.cpuThinkingTimeMs = 1000,
+    this.startFen = chesslib.Chess.DEFAULT_POSITION,
+  }) : super(key: key);
 
   @override
   _GameScreenState createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  var _chess = new chesslib.Chess();
+  var _chess;
   var _blackAtBottom = false;
   var _lastMove = <String>[];
+  var _whitePlayerType = PlayerType.human;
+  var _blackPlayerType = PlayerType.computer;
+  late final _stockfish;
+
+  @override
+  void initState() {
+    super.initState();
+    _chess = new chesslib.Chess.fromFEN(widget.startFen);
+    _initStockfish();
+  }
+
+  Future<void> _initStockfish() async {
+    _stockfish = new Stockfish();
+    _stockfish.stdout.listen(_processStockfishLine);
+    await waitUntilStockfishReady();
+    _stockfish.stdin = 'isready';
+    _makeComputerMove();
+  }
+
+  Future<void> waitUntilStockfishReady() async {
+    while (_stockfish.state.value != StockfishState.ready) {
+      await Future.delayed(Duration(milliseconds: 600));
+    }
+  }
+
+  Future<bool> _disposeStockfish() async {
+    _stockfish.dispose();
+    return true;
+  }
+
+  void _makeComputerMove() {
+    final whiteTurn = _chess.turn == chesslib.Color.WHITE;
+    final humanTurn = (whiteTurn && (_whitePlayerType == PlayerType.human)) ||
+        (!whiteTurn && (_blackPlayerType == PlayerType.human));
+    if (humanTurn) return;
+
+    if (_chess.game_over) return;
+
+    _stockfish.stdin = 'position fen ${_chess.fen}';
+    _stockfish.stdin = 'go movetime ${widget.cpuThinkingTimeMs}';
+  }
+
+  void _processStockfishLine(String line) {
+    print(line);
+    if (line.startsWith('bestmove')) {
+      final moveUci = line.split(' ')[1];
+      final from = moveUci.substring(0, 2);
+      final to = moveUci.substring(2, 4);
+      final promotionStr = moveUci.length >= 5 ? moveUci.substring(4, 5) : null;
+      var promotion;
+      switch (promotionStr?.toLowerCase()) {
+        case 'q':
+          promotion = PieceType.QUEEN;
+          break;
+        case 'r':
+          promotion = PieceType.ROOK;
+          break;
+        case 'b':
+          promotion = PieceType.BISHOP;
+          break;
+        case 'n':
+          promotion = PieceType.KNIGHT;
+          break;
+        default:
+          promotion = null;
+      }
+      _chess.move(<String, String?>{
+        'from': from,
+        'to': to,
+        'promotion': promotion,
+      });
+      setState(() {
+        _lastMove.clear();
+        _lastMove.addAll([from, to]);
+      });
+      _makeComputerMove();
+    }
+  }
 
   void _restartGame() {
     setState(() {
@@ -101,9 +186,9 @@ class _GameScreenState extends State<GameScreen> {
     if (success) {
       setState(() {
         _lastMove.clear();
-        _lastMove.add(move.from);
-        _lastMove.add(move.to);
+        _lastMove.addAll([move.from, move.to]);
       });
+      _makeComputerMove();
     }
   }
 
@@ -134,8 +219,8 @@ class _GameScreenState extends State<GameScreen> {
         size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
         onMove: _tryMakingMove,
         orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
-        whitePlayerType: PlayerType.human,
-        blackPlayerType: PlayerType.computer,
+        whitePlayerType: _whitePlayerType,
+        blackPlayerType: _blackPlayerType,
         lastMoveToHighlight: _lastMove,
         promotionChooserTitle: I18nText('game.choose_promotion_title'),
       ),
