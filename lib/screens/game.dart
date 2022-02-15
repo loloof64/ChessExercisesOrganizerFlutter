@@ -41,7 +41,7 @@ class _GameScreenState extends State<GameScreen> {
   var _chess;
   var _blackAtBottom = false;
   var _lastMove = <String>[];
-  var _whitePlayerType = PlayerType.human;
+  var _whitePlayerType = PlayerType.computer;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
@@ -122,6 +122,7 @@ class _GameScreenState extends State<GameScreen> {
       _chess = new chesslib.Chess.fromFEN(widget.startFen);
       _lastMove.clear();
     });
+    _makeComputerMove();
   }
 
   void _purposeRestartGame(BuildContext context) {
