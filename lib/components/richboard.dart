@@ -44,62 +44,6 @@ class RichChessboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final commonTextStyle = TextStyle(
-      color: Colors.yellow.shade400,
-      fontWeight: FontWeight.bold,
-      fontSize: size * 0.04,
-    );
-    final topFilesCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
-      final letterOffset = orientation == BoardColor.WHITE ? file : 7 - file;
-      final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
-      return Positioned(
-        top: size * 0.005,
-        left: size * (0.09 + 0.113 * file),
-        child: Text(
-          letter,
-          style: commonTextStyle,
-        ),
-      );
-    });
-
-    final bottomFilesCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
-      final letterOffset = orientation == BoardColor.WHITE ? file : 7 - file;
-      final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
-      return Positioned(
-        bottom: size * 0.003,
-        left: size * (0.09 + 0.113 * file),
-        child: Text(
-          letter,
-          style: commonTextStyle,
-        ),
-      );
-    });
-
-    final leftRanksCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
-      final letterOffset = orientation == BoardColor.WHITE ? 7 - rank : rank;
-      final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
-      return Positioned(
-        left: size * 0.012,
-        top: size * (0.09 + 0.113 * rank),
-        child: Text(
-          letter,
-          style: commonTextStyle,
-        ),
-      );
-    });
-
-    final rightRanksCoordinates = [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
-      final letterOffset = orientation == BoardColor.WHITE ? 7 - rank : rank;
-      final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
-      return Positioned(
-        right: size * 0.012,
-        top: size * (0.09 + 0.113 * rank),
-        child: Text(
-          letter,
-          style: commonTextStyle,
-        ),
-      );
-    });
 
     final isWhiteTurn = fen.split(' ')[1] == 'w';
     final playerTurn = Positioned(
@@ -117,10 +61,10 @@ class RichChessboard extends StatelessWidget {
           height: size,
           child: Stack(
             children: [
-              ...topFilesCoordinates,
-              ...bottomFilesCoordinates,
-              ...leftRanksCoordinates,
-              ...rightRanksCoordinates,
+              ...getFilesCoordinates(boardSize: size, top: true, reversed: orientation == BoardColor.BLACK,),
+              ...getFilesCoordinates(boardSize: size, top: false, reversed: orientation == BoardColor.BLACK,),
+              ...getRanksCoordinates(boardSize: size, left: true, reversed: orientation == BoardColor.BLACK,),
+              ...getRanksCoordinates(boardSize: size, left: false, reversed: orientation == BoardColor.BLACK,),
               playerTurn,
             ],
           ),
@@ -173,4 +117,46 @@ class _PlayerTurn extends StatelessWidget {
       ),
     );
   }
+}
+
+Iterable<Widget> getFilesCoordinates({required double boardSize, required bool top, required bool reversed,}) {
+  final commonTextStyle = TextStyle(
+      color: Colors.yellow.shade400,
+      fontWeight: FontWeight.bold,
+      fontSize: boardSize * 0.04,
+    );
+
+  return [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
+      final letterOffset = !reversed ? file : 7 - file;
+      final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
+      return Positioned(
+        top: boardSize* (top ? 0.005 : 0.955),
+        left: boardSize * (0.09 + 0.113 * file),
+        child: Text(
+          letter,
+          style: commonTextStyle,
+        ),
+      );
+    },);
+}
+
+Iterable<Widget> getRanksCoordinates({required double boardSize, required bool left, required bool reversed,}) {
+  final commonTextStyle = TextStyle(
+      color: Colors.yellow.shade400,
+      fontWeight: FontWeight.bold,
+      fontSize: boardSize * 0.04,
+    );
+
+    return [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
+      final letterOffset = reversed ? rank : 7-rank;
+      final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
+      return Positioned(
+        left: boardSize * (left ? 0.012 : 0.965),
+        top: boardSize * (0.09 + 0.113 * rank),
+        child: Text(
+          letter,
+          style: commonTextStyle,
+        ),
+      );
+    });
 }
