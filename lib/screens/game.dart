@@ -22,6 +22,9 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
 import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:stockfish/stockfish.dart';
+import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
+
+import 'package:logger/logger.dart';
 
 class GameScreen extends StatefulWidget {
   final int cpuThinkingTimeMs;
@@ -120,8 +123,11 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _restartGame() {
+    ////////////////////
+    Logger().i(widget.startFen);
+    ///////////////////////
     setState(() {
-      _chess = new chesslib.Chess();
+      _chess = new chesslib.Chess.fromFEN(widget.startFen);
       _lastMove.clear();
     });
   }
@@ -174,6 +180,57 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  Future<PieceType?> _handlePromotion(BuildContext context) async {
+    final promotion = await _showPromotionDialog(context);
+    _makeComputerMove();
+    return promotion;
+  }
+
+  Future<PieceType?> _showPromotionDialog(BuildContext context) {
+    final pieceSize = _getMinScreenSize(context) *
+        (_isInLandscapeMode(context) ? 0.75 : 1.0) *
+        0.15;
+    final whiteTurn = _chess.fen.split(' ')[1] == 'w';
+    return showDialog<PieceType>(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: I18nText('game.choose_promotion_title'),
+            alignment: Alignment.center,
+            content: FittedBox(
+              child: Row(
+                children: [
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteQueen(size: pieceSize)
+                        : BlackQueen(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteRook(size: pieceSize)
+                        : BlackRook(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.ROOK),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteBishop(size: pieceSize)
+                        : BlackBishop(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
+                  ),
+                  InkWell(
+                    child: whiteTurn
+                        ? WhiteKnight(size: pieceSize)
+                        : BlackKnight(size: pieceSize),
+                    onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   void _tryMakingMove({required ShortMove move}) {
     final success = _chess.move(<String, String?>{
       'from': move.from,
@@ -209,6 +266,12 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   @override
+  void dispose() {
+    _disposeStockfish();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
     final isInLandscapeMode = _isInLandscapeMode(context);
@@ -222,7 +285,7 @@ class _GameScreenState extends State<GameScreen> {
         whitePlayerType: _whitePlayerType,
         blackPlayerType: _blackPlayerType,
         lastMoveToHighlight: _lastMove,
-        promotionChooserTitle: I18nText('game.choose_promotion_title'),
+        onPromote: () => _handlePromotion(context),
       ),
       Column(
         children: [
