@@ -145,27 +145,21 @@ class _GameScreenState extends State<GameScreen> {
           title: I18nText('game.restart_game_title'),
           content: I18nText('game.restart_game_msg'),
           actions: [
-            ElevatedButton(
+            DialogActionButton(
               onPressed: doStartNewGame,
-              child: I18nText(
+              textContent: I18nText(
                 'buttons.ok',
               ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.teal,
-                textStyle: TextStyle(color: Colors.white),
-                elevation: 5,
-              ),
+              backgroundColor: Colors.tealAccent,
+              textColor: Colors.white,
             ),
-            ElevatedButton(
+            DialogActionButton(
               onPressed: closeDialog,
-              child: I18nText(
+              textContent: I18nText(
                 'buttons.cancel',
               ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.redAccent,
-                textStyle: TextStyle(color: Colors.white),
-                elevation: 5,
-              ),
+              textColor: Colors.white,
+              backgroundColor: Colors.redAccent,
             )
           ],
         );
@@ -369,6 +363,29 @@ class _GameScreenState extends State<GameScreen> {
                 children: content,
               ),
       ),
+    );
+  }
+}
+
+class DialogActionButton extends StatelessWidget {
+  final void Function() onPressed;
+  final Widget textContent;
+  final Color backgroundColor;
+  final Color textColor;
+  const DialogActionButton({Key? key, required this.onPressed, required this.textContent, required this.backgroundColor, required this.textColor,}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: ElevatedButton(
+              onPressed: onPressed,
+              child: textContent,
+              style: ElevatedButton.styleFrom(
+                primary: backgroundColor,
+                textStyle: TextStyle(color: textColor,),
+                elevation: 5,
+              ),
+            ),
     );
   }
 }
