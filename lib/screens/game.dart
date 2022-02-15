@@ -24,8 +24,6 @@ import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:stockfish/stockfish.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 
-import 'package:logger/logger.dart';
-
 class GameScreen extends StatefulWidget {
   final int cpuThinkingTimeMs;
   final String startFen;
@@ -45,7 +43,8 @@ class _GameScreenState extends State<GameScreen> {
   var _lastMove = <String>[];
   var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
-  late final _stockfish;
+  var _stockfish;
+  var _engineThinking = false;
 
   @override
   void initState() {
@@ -68,9 +67,9 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  Future<bool> _disposeStockfish() async {
+  _disposeStockfish() {
     _stockfish.dispose();
-    return true;
+      _stockfish = null;
   }
 
   void _makeComputerMove() {
@@ -79,7 +78,13 @@ class _GameScreenState extends State<GameScreen> {
         (!whiteTurn && (_blackPlayerType == PlayerType.human));
     if (humanTurn) return;
 
-    if (_chess.game_over) return;
+    if (_chess.game_over) {
+        return;
+      }
+
+    setState(() {
+      _engineThinking = true;
+    });
 
     _stockfish.stdin = 'position fen ${_chess.fen}';
     _stockfish.stdin = 'go movetime ${widget.cpuThinkingTimeMs}';
@@ -91,41 +96,28 @@ class _GameScreenState extends State<GameScreen> {
       final moveUci = line.split(' ')[1];
       final from = moveUci.substring(0, 2);
       final to = moveUci.substring(2, 4);
-      final promotionStr = moveUci.length >= 5 ? moveUci.substring(4, 5) : null;
-      var promotion;
-      switch (promotionStr?.toLowerCase()) {
-        case 'q':
-          promotion = PieceType.QUEEN;
-          break;
-        case 'r':
-          promotion = PieceType.ROOK;
-          break;
-        case 'b':
-          promotion = PieceType.BISHOP;
-          break;
-        case 'n':
-          promotion = PieceType.KNIGHT;
-          break;
-        default:
-          promotion = null;
-      }
+      final promotion = moveUci.length >= 5 ? moveUci.substring(4, 5) : null;
       _chess.move(<String, String?>{
         'from': from,
         'to': to,
-        'promotion': promotion,
+        'promotion': promotion?.toLowerCase(),
       });
       setState(() {
+        _engineThinking = false;
         _lastMove.clear();
         _lastMove.addAll([from, to]);
       });
-      _makeComputerMove();
+      if (_chess.game_over) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: _getGameEndedType(),),);
+        return;
+      }
+      else {
+        _makeComputerMove();
+      }
     }
   }
 
   void _restartGame() {
-    ////////////////////
-    Logger().i(widget.startFen);
-    ///////////////////////
     setState(() {
       _chess = new chesslib.Chess.fromFEN(widget.startFen);
       _lastMove.clear();
@@ -231,6 +223,26 @@ class _GameScreenState extends State<GameScreen> {
         });
   }
 
+  Widget _getGameEndedType() {
+    var result = null;
+    if (_chess.in_checkmate) {
+      result = (_chess.turn == chesslib.Color.WHITE) ? I18nText('game_termination.black_checkmate_white') : I18nText('game_termination.white_checkmate_black');
+    }
+    else if (_chess.in_stalemate) {
+      result = I18nText('game_termination.stalemate');
+    }
+    else if (_chess.in_threefold_repetition) {
+      result = I18nText('game_termination.repetitions');
+    }
+    else if (_chess.insufficient_material) {
+      result = I18nText('game_termination.insufficient_material');
+    }
+    else if (_chess.in_draw) {
+      result = I18nText('game_termination.fifty_moves');
+    }
+    return result;
+  }
+
   void _tryMakingMove({required ShortMove move}) {
     final success = _chess.move(<String, String?>{
       'from': move.from,
@@ -245,6 +257,9 @@ class _GameScreenState extends State<GameScreen> {
         _lastMove.clear();
         _lastMove.addAll([move.from, move.to]);
       });
+      if (_chess.game_over) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: _getGameEndedType(),),);
+      }
       _makeComputerMove();
     }
   }
@@ -276,8 +291,34 @@ class _GameScreenState extends State<GameScreen> {
     final minScreenSize = _getMinScreenSize(context);
     final isInLandscapeMode = _isInLandscapeMode(context);
 
+    const isDebugging = true;
+
+    final tempZone = isDebugging
+        ? <Widget>[
+            ElevatedButton(
+              onPressed: _disposeStockfish,
+              child: Row(
+                children: [
+                  Icon(Icons.warning_rounded),
+                  Text(
+                    'Dispose stockfish before reload !',
+                  )
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: _initStockfish,
+              child: Row(children: [
+                Icon(Icons.warning_rounded),
+                Text('Restart stockfish after reload !'),
+              ]),
+            )
+          ]
+        : <Widget>[];
+
     final content = <Widget>[
       RichChessboard(
+        engineThinking: _engineThinking,
         fen: _chess.fen,
         size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
         onMove: _tryMakingMove,
@@ -294,7 +335,8 @@ class _GameScreenState extends State<GameScreen> {
               GoRouter.of(context).go('/');
             },
             child: I18nText('game.go_back_home'),
-          )
+          ),
+          ...tempZone,
         ],
       ),
     ];

@@ -15,6 +15,7 @@ class RichChessboard extends StatelessWidget {
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
   final Future<PieceType?> Function() onPromote;
+  final bool engineThinking;
 
   bool currentPlayerIsHuman() {
     final whiteTurn = fen.split(' ')[1] == 'w';
@@ -31,6 +32,7 @@ class RichChessboard extends StatelessWidget {
     required this.whitePlayerType,
     required this.blackPlayerType,
     required this.onPromote,
+    required this.engineThinking,
     this.lastMoveToHighlight = const [],
   }) : super(key: key);
 
@@ -136,7 +138,10 @@ class RichChessboard extends StatelessWidget {
         SizedBox(
           width: currentPlayerIsHuman() ? 1 : size,
           height: currentPlayerIsHuman() ? 1 : size,
-          child: Text(''),
+          child: engineThinking ? CircularProgressIndicator(
+            backgroundColor: Colors.teal,
+            strokeWidth: 8,
+          ) : Text(''),
         ),
       ],
     );

@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
         path: '/game',
         builder: (context, state) => const GameScreen(
           startFen: '8/1k1P1q2/8/2K5/8/8/8/8 w - - 0 1',
+          cpuThinkingTimeMs: 1500,
         ),
       ),
     ],

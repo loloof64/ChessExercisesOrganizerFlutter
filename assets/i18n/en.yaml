@@ -11,3 +11,10 @@ game:
     player_turn: "Turn"
     restart_game_title: "New game ?"
     restart_game_msg: "Do you want to finish current game and start a new one ?"
+game_termination:
+    black_checkmate_white: "Black has won by checkmate."
+    white_checkmate_black: "White has won by checkmate."
+    stalemate: "Draw by stalemate."
+    repetitions: "Draw by threefold repetitions."
+    insufficient_material: "Draw by insufficient material."
+    fifty_moves: "Draw by 50 moves' rule."

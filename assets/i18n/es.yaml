@@ -11,3 +11,10 @@ game:
     player_turn: "Turno"
     restart_game_title: "¿Nueva partida?"
     restart_game_msg: "¿Quiere detener el juego actual y comenzar uno nuevo?"
+game_termination:
+    black_checkmate_white: "Los Negros ha ganado por jaque mate."
+    white_checkmate_black: "Los Blancos ha ganado por jaque mate."
+    stalemate: "Empate por estancamiento."
+    repetitions: "Empate por tres repeticiones."
+    insufficient_material: "Empate por material insuficiente."
+    fifty_moves: "Empate por la regla de los 50 movimientos."

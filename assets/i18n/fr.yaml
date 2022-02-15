@@ -11,3 +11,10 @@ game:
     player_turn: "Trait"
     restart_game_title: "Nouvelle partie ?"
     restart_game_msg: "Voulez-vous arrêter la partie en cours et en démarrer une nouvelle ?"
+game_termination:
+    black_checkmate_white: "Les Noirs gagnent par échec et mat."
+    white_checkmate_black: "Les Blancs gagnent par échec et mat."
+    stalemate: "Nulle par pat."
+    repetitions: "Nulle par triple répétition."
+    insufficient_material: "Nulle par insuffisance matérielle."
+    fifty_moves: "Nulle par la règle des 50 coups."
