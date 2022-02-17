@@ -19,6 +19,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:logger/logger.dart';
+import 'dart:async' show Future;
+import '../logic/pgn/parser.dart' show parsePgn;
+
+Future<String> loadPgnFromAsset(
+    {required BuildContext context, required String assetRef}) async {
+  return await DefaultAssetBundle.of(context)
+      .loadString('assets/pgn/$assetRef');
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -40,12 +49,31 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Center(
-        child: ElevatedButton(
-          child: I18nText('home.play_button'),
-          onPressed: () {
-            GoRouter.of(context).go('/game');
-          },
-        ),
+        child: Column(children: [
+          ElevatedButton(
+            child: I18nText('home.play_button'),
+            onPressed: () {
+              GoRouter.of(context).go('/game');
+            },
+          ),
+          //////////////////////////////
+          ElevatedButton(
+            onPressed: () async {
+              var pgnString = await loadPgnFromAsset(
+                  assetRef: 'KQ_K.pgn', context: context);
+              var rawResult = parsePgn(pgnString);
+              if (rawResult.isSuccess) {
+                var result = rawResult.value;
+                Logger().i(result);
+                Logger().i(result.length);
+              } else {
+                Logger().e("Failed parsing file !");
+              }
+            },
+            child: Text('Test parse pgn'),
+          )
+          //////////////////////////////
+        ]),
       ),
     );
   }

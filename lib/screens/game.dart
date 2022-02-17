@@ -69,7 +69,7 @@ class _GameScreenState extends State<GameScreen> {
 
   _disposeStockfish() {
     _stockfish.dispose();
-      _stockfish = null;
+    _stockfish = null;
   }
 
   void _makeComputerMove() {
@@ -79,8 +79,8 @@ class _GameScreenState extends State<GameScreen> {
     if (humanTurn) return;
 
     if (_chess.game_over) {
-        return;
-      }
+      return;
+    }
 
     setState(() {
       _engineThinking = true;
@@ -108,10 +108,13 @@ class _GameScreenState extends State<GameScreen> {
         _lastMove.addAll([from, to]);
       });
       if (_chess.game_over) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: _getGameEndedType(),),);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: _getGameEndedType(),
+          ),
+        );
         return;
-      }
-      else {
+      } else {
         _makeComputerMove();
       }
     }
@@ -221,18 +224,16 @@ class _GameScreenState extends State<GameScreen> {
   Widget _getGameEndedType() {
     var result = null;
     if (_chess.in_checkmate) {
-      result = (_chess.turn == chesslib.Color.WHITE) ? I18nText('game_termination.black_checkmate_white') : I18nText('game_termination.white_checkmate_black');
-    }
-    else if (_chess.in_stalemate) {
+      result = (_chess.turn == chesslib.Color.WHITE)
+          ? I18nText('game_termination.black_checkmate_white')
+          : I18nText('game_termination.white_checkmate_black');
+    } else if (_chess.in_stalemate) {
       result = I18nText('game_termination.stalemate');
-    }
-    else if (_chess.in_threefold_repetition) {
+    } else if (_chess.in_threefold_repetition) {
       result = I18nText('game_termination.repetitions');
-    }
-    else if (_chess.insufficient_material) {
+    } else if (_chess.insufficient_material) {
       result = I18nText('game_termination.insufficient_material');
-    }
-    else if (_chess.in_draw) {
+    } else if (_chess.in_draw) {
       result = I18nText('game_termination.fifty_moves');
     }
     return result;
@@ -253,7 +254,11 @@ class _GameScreenState extends State<GameScreen> {
         _lastMove.addAll([move.from, move.to]);
       });
       if (_chess.game_over) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: _getGameEndedType(),),);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: _getGameEndedType(),
+          ),
+        );
       }
       _makeComputerMove();
     }
@@ -372,20 +377,28 @@ class DialogActionButton extends StatelessWidget {
   final Widget textContent;
   final Color backgroundColor;
   final Color textColor;
-  const DialogActionButton({Key? key, required this.onPressed, required this.textContent, required this.backgroundColor, required this.textColor,}) : super(key: key);
+  const DialogActionButton({
+    Key? key,
+    required this.onPressed,
+    required this.textContent,
+    required this.backgroundColor,
+    required this.textColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ElevatedButton(
-              onPressed: onPressed,
-              child: textContent,
-              style: ElevatedButton.styleFrom(
-                primary: backgroundColor,
-                textStyle: TextStyle(color: textColor,),
-                elevation: 5,
-              ),
-            ),
+        onPressed: onPressed,
+        child: textContent,
+        style: ElevatedButton.styleFrom(
+          primary: backgroundColor,
+          textStyle: TextStyle(
+            color: textColor,
+          ),
+          elevation: 5,
+        ),
+      ),
     );
   }
 }

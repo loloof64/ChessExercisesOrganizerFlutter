@@ -246,7 +246,7 @@ packages:
     source: hosted
     version: "0.4.0"
   petitparser:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: petitparser
       url: "https://pub.dartlang.org"

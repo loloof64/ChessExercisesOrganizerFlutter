@@ -1,3 +1,21 @@
+/*
+    Chess exercises organizer : oad your chess exercises and train yourself against the device.
+    Copyright (C) 2022  Laurent Bernabe <laurent.bernabe@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 
@@ -44,7 +62,6 @@ class RichChessboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final isWhiteTurn = fen.split(' ')[1] == 'w';
     final playerTurn = Positioned(
       child: _PlayerTurn(size: size * 0.05, whiteTurn: isWhiteTurn),
@@ -61,10 +78,26 @@ class RichChessboard extends StatelessWidget {
           height: size,
           child: Stack(
             children: [
-              ...getFilesCoordinates(boardSize: size, top: true, reversed: orientation == BoardColor.BLACK,),
-              ...getFilesCoordinates(boardSize: size, top: false, reversed: orientation == BoardColor.BLACK,),
-              ...getRanksCoordinates(boardSize: size, left: true, reversed: orientation == BoardColor.BLACK,),
-              ...getRanksCoordinates(boardSize: size, left: false, reversed: orientation == BoardColor.BLACK,),
+              ...getFilesCoordinates(
+                boardSize: size,
+                top: true,
+                reversed: orientation == BoardColor.BLACK,
+              ),
+              ...getFilesCoordinates(
+                boardSize: size,
+                top: false,
+                reversed: orientation == BoardColor.BLACK,
+              ),
+              ...getRanksCoordinates(
+                boardSize: size,
+                left: true,
+                reversed: orientation == BoardColor.BLACK,
+              ),
+              ...getRanksCoordinates(
+                boardSize: size,
+                left: false,
+                reversed: orientation == BoardColor.BLACK,
+              ),
               playerTurn,
             ],
           ),
@@ -82,10 +115,12 @@ class RichChessboard extends StatelessWidget {
         SizedBox(
           width: currentPlayerIsHuman() ? 1 : size,
           height: currentPlayerIsHuman() ? 1 : size,
-          child: engineThinking ? CircularProgressIndicator(
-            backgroundColor: Colors.teal,
-            strokeWidth: 8,
-          ) : Text(''),
+          child: engineThinking
+              ? CircularProgressIndicator(
+                  backgroundColor: Colors.teal,
+                  strokeWidth: 8,
+                )
+              : Text(''),
         ),
       ],
     );
@@ -119,44 +154,54 @@ class _PlayerTurn extends StatelessWidget {
   }
 }
 
-Iterable<Widget> getFilesCoordinates({required double boardSize, required bool top, required bool reversed,}) {
+Iterable<Widget> getFilesCoordinates({
+  required double boardSize,
+  required bool top,
+  required bool reversed,
+}) {
   final commonTextStyle = TextStyle(
-      color: Colors.yellow.shade400,
-      fontWeight: FontWeight.bold,
-      fontSize: boardSize * 0.04,
-    );
+    color: Colors.yellow.shade400,
+    fontWeight: FontWeight.bold,
+    fontSize: boardSize * 0.04,
+  );
 
-  return [0, 1, 2, 3, 4, 5, 6, 7].map((file) {
+  return [0, 1, 2, 3, 4, 5, 6, 7].map(
+    (file) {
       final letterOffset = !reversed ? file : 7 - file;
       final letter = String.fromCharCode('A'.codeUnitAt(0) + letterOffset);
       return Positioned(
-        top: boardSize* (top ? 0.005 : 0.955),
+        top: boardSize * (top ? 0.005 : 0.955),
         left: boardSize * (0.09 + 0.113 * file),
         child: Text(
           letter,
           style: commonTextStyle,
         ),
       );
-    },);
+    },
+  );
 }
 
-Iterable<Widget> getRanksCoordinates({required double boardSize, required bool left, required bool reversed,}) {
+Iterable<Widget> getRanksCoordinates({
+  required double boardSize,
+  required bool left,
+  required bool reversed,
+}) {
   final commonTextStyle = TextStyle(
-      color: Colors.yellow.shade400,
-      fontWeight: FontWeight.bold,
-      fontSize: boardSize * 0.04,
-    );
+    color: Colors.yellow.shade400,
+    fontWeight: FontWeight.bold,
+    fontSize: boardSize * 0.04,
+  );
 
-    return [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
-      final letterOffset = reversed ? rank : 7-rank;
-      final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
-      return Positioned(
-        left: boardSize * (left ? 0.012 : 0.965),
-        top: boardSize * (0.09 + 0.113 * rank),
-        child: Text(
-          letter,
-          style: commonTextStyle,
-        ),
-      );
-    });
+  return [0, 1, 2, 3, 4, 5, 6, 7].map((rank) {
+    final letterOffset = reversed ? rank : 7 - rank;
+    final letter = String.fromCharCode('1'.codeUnitAt(0) + letterOffset);
+    return Positioned(
+      left: boardSize * (left ? 0.012 : 0.965),
+      top: boardSize * (0.09 + 0.113 * rank),
+      child: Text(
+        letter,
+        style: commonTextStyle,
+      ),
+    );
+  });
 }

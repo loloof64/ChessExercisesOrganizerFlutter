@@ -18,3 +18,8 @@ game_termination:
     repetitions: "Draw by threefold repetitions."
     insufficient_material: "Draw by insufficient material."
     fifty_moves: "Draw by 50 moves' rule."
+sample_games:
+    K2R_K: "King + 2 Rooks / King"
+    KP_K: "King + Pawn / King"
+    KQ_K: "King + Queen / King"
+    KR_K: "King + Rook / King"
