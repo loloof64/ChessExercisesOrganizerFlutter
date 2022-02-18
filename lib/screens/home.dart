@@ -21,7 +21,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:logger/logger.dart';
 import 'dart:async' show Future;
-import '../logic/pgn/parser.dart' show parsePgn;
+import '../logic/pgn/parser.dart';
 
 Future<String> loadPgnFromAsset(
     {required BuildContext context, required String assetRef}) async {
@@ -61,13 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () async {
               var pgnString = await loadPgnFromAsset(
                   assetRef: 'KQ_K.pgn', context: context);
-              var rawResult = parsePgn(pgnString);
-              if (rawResult.isSuccess) {
-                var result = rawResult.value;
+              try {
+                var result = getPgnData(pgnString);
                 Logger().i(result);
-                Logger().i(result.length);
-              } else {
-                Logger().e("Failed parsing file !");
+              } on PgnParsingException catch (_) {
+                Logger().e('Failed to parse pgn !');
               }
             },
             child: Text('Test parse pgn'),

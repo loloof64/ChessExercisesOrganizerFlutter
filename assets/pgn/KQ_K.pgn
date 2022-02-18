@@ -4,12 +4,12 @@
 [Round "?"]
 [White "?"]
 [Black "?"]
-[Result "*"]
+[Result "1-0"]
 [FEN "4k3/8/4K3/8/8/8/8/Q7 w - - 0 46"]
 [Setup "1"]
 [Goal "#1-0"]
 
-46. Qa8# ( 46. Qh8#) *
+46. Qa8# ( 46. Qh8# 1-0) 1-0
 
 [Event "?"]
 [Site "?"]

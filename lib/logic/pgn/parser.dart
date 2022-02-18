@@ -19,6 +19,9 @@ import 'dart:ffi';
 
 import 'package:petitparser/petitparser.dart';
 import 'grammar.dart';
+import 'package:logger/logger.dart';
+
+class PgnParsingException implements Exception {}
 
 class PgnParserDefinition extends PgnGrammarDefinition {
   var _messages = [];
@@ -479,7 +482,7 @@ class PgnParserDefinition extends PgnGrammarDefinition {
 
   @override
   Parser endGame() => super.endGame().map((each) {
-        return [each[0]];
+        return [each];
       });
 
   @override
@@ -725,28 +728,16 @@ class PgnParserDefinition extends PgnGrammarDefinition {
   Parser halfMove() => super.halfMove().map((each) {
         if (each[0] == 'O-O-O') {
           final ch = each[1];
-          var hm = {};
-          hm['notation'] = 'O-O-O' + (ch ?? "");
-          hm['check'] = (ch ?? null);
-          return hm;
+          return 'O-O-O' + (ch ?? "");
         } else if (each[0] == 'O-O') {
           final ch = each[1];
-          var hm = {};
-          hm['notation'] = 'O-O' + (ch ?? "");
-          hm['check'] = (ch ?? null);
-          return hm;
+          return 'O-O' + (ch ?? "");
         } else if (each[1] == '@') {
           final fig = each[0];
           final col = each[2];
           final row = each[3];
 
-          var hm = {};
-          hm['fig'] = fig;
-          hm['drop'] = true;
-          hm['col'] = col;
-          hm['row'] = row;
-          hm['notation'] = fig + '@' + col + row;
-          return hm;
+          return fig + '@' + col + row;
         } else if (each.length == 6) {
           final fig = each[0];
           final str = each[1];
@@ -755,16 +746,12 @@ class PgnParserDefinition extends PgnGrammarDefinition {
           final pr = each[4];
           final ch = each[5];
 
-          var hm = {};
-          hm['fig'] = (fig ?? null);
-          hm['strike'] = (str ?? null);
-          hm['col'] = col;
-          hm['row'] = row;
-          hm['check'] = (ch ?? null);
-          hm['promotion'] = pr;
-          hm['notation'] =
-              (fig ?? "") + (str ?? "") + col + row + (pr ?? "") + (ch ?? "");
-          return hm;
+          return (fig ?? "") +
+              (str ?? "") +
+              col +
+              row +
+              (pr ?? "") +
+              (ch ?? "");
         } else if (each.length == 8) {
           final fig = each[0];
           final cols = each[1];
@@ -775,12 +762,7 @@ class PgnParserDefinition extends PgnGrammarDefinition {
           final pr = each[6];
           final ch = each[7];
 
-          var hm = {};
-          hm['fig'] = (fig ?? null);
-          hm['strike'] = (str == 'x' ? str : null);
-          hm['col'] = col;
-          hm['row'] = row;
-          hm['notation'] = (fig && (fig != 'P') ? fig : "") +
+          return (fig && (fig != 'P') ? fig : "") +
               cols +
               rows +
               (str == 'x' ? str : "-") +
@@ -788,9 +770,6 @@ class PgnParserDefinition extends PgnGrammarDefinition {
               row +
               (pr ?? "") +
               (ch ?? "");
-          hm['check'] = (ch ?? null);
-          hm['promotion'] = pr;
-          return hm;
         }
         // each length is 9
         else {
@@ -802,22 +781,13 @@ class PgnParserDefinition extends PgnGrammarDefinition {
           final pr = each[5];
           final ch = each[6];
 
-          var hm = {};
-          hm['fig'] = (fig ?? null);
-          hm['disc'] = (disc ?? null);
-          hm['strike'] = (str ?? null);
-          hm['col'] = col;
-          hm['row'] = row;
-          hm['check'] = (ch ?? null);
-          hm['promotion'] = pr;
-          hm['notation'] = (fig ?? "") +
+          return (fig ?? "") +
               (disc ?? "") +
               (str ?? "") +
               col +
               row +
               (pr ?? "") +
               (ch ?? "");
-          return hm;
         }
       });
 
@@ -891,8 +861,84 @@ class PgnParserDefinition extends PgnGrammarDefinition {
       });
 }
 
-dynamic parsePgn(String pgnContent) {
+dynamic _parsePgn(String pgnContent) {
   var definition = PgnParserDefinition();
   var parser = definition.build();
   return parser.parse(pgnContent);
+}
+
+dynamic _recursivelyAdaptPgnMoves(
+    {required dynamic valueToTransform,
+    required bool startsWithWhiteTurn,
+    required dynamic accum}) {
+  if (valueToTransform.isEmpty) {
+    return accum;
+  }
+
+  var result = accum;
+  bool whiteTurn = startsWithWhiteTurn;
+  int? moveNumber = null;
+
+  for (var moveData in valueToTransform) {
+    // MoveData can also be a string, for the result.
+    if (moveData is Map) {
+      var transformedData = Map.from(moveData);
+      if (transformedData['moveNumber'] != null) {
+        moveNumber = transformedData['moveNumber'];
+      } else {
+        transformedData['moveNumber'] = moveNumber;
+      }
+      transformedData['whiteTurn'] = whiteTurn;
+      transformedData['variations'] = [];
+
+      if (moveData['variations'].isNotEmpty) {
+        for (var variationData in moveData['variations']) {
+          transformedData['variations'].add(_recursivelyAdaptPgnMoves(
+              valueToTransform: variationData,
+              startsWithWhiteTurn: whiteTurn,
+              accum: []));
+        }
+      }
+
+      result.add(transformedData);
+
+      whiteTurn = !whiteTurn;
+      if (moveNumber != null && whiteTurn) moveNumber++;
+    }
+    // MoveData is a string, for the result.
+    else {
+      result.add({'result': moveData});
+    }
+  }
+
+  return result;
+}
+
+dynamic _adaptPgnArray(dynamic pgnArray) {
+  var result = [];
+  pgnArray.forEach((current) {
+    var transformedData = {};
+    transformedData['tags'] = current['tags'];
+    transformedData['gameComment'] = current['gameComment'];
+    var startsWithWhiteTurn = true;
+    if (transformedData['tags'].containsKey('FEN')) {
+      final startPosition = transformedData['tags']['FEN'];
+      startsWithWhiteTurn = startPosition.split(' ')[1] == 'w';
+    }
+    transformedData['moves'] = _recursivelyAdaptPgnMoves(
+        valueToTransform: current['moves'],
+        startsWithWhiteTurn: startsWithWhiteTurn,
+        accum: []);
+    result.add(transformedData);
+  });
+  return result;
+}
+
+dynamic getPgnData(String pgnContent) {
+  var pgnArray = _parsePgn(pgnContent);
+  if (pgnArray.isSuccess) {
+    return _adaptPgnArray(pgnArray.value);
+  } else {
+    throw PgnParsingException();
+  }
 }
