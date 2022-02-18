@@ -3,7 +3,8 @@ buttons:
     cancel: "Cancel"
 home:
     title: "Home"
-    play_button: "Play"
+    samples_tab: "Samples"
+    customs_tab: "Customs"
 game:
     title: "Game"
     go_back_home: "Go back to home"

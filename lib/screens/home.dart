@@ -19,9 +19,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async' show Future;
 import '../logic/pgn/parser.dart';
+import '../screens/home/samples.dart';
+import '../screens/home/customs.dart';
 
 Future<String> loadPgnFromAsset(
     {required BuildContext context, required String assetRef}) async {
@@ -37,8 +39,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _currentScreenIndex = 0;
+  List _screens = [SamplesScreen(), CustomsScreen()];
+
+  void _setScreen(int index) {
+    setState(() {
+      _currentScreenIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final samplesTitle = FlutterI18n.translate(context, "home.samples_tab");
+    final customsTitle = FlutterI18n.translate(context, "home.customs_tab");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -48,31 +61,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Column(children: [
-          ElevatedButton(
-            child: I18nText('home.play_button'),
-            onPressed: () {
-              GoRouter.of(context).go('/game');
-            },
-          ),
-          //////////////////////////////
-          ElevatedButton(
-            onPressed: () async {
-              var pgnString = await loadPgnFromAsset(
-                  assetRef: 'KQ_K.pgn', context: context);
-              try {
-                var result = getPgnData(pgnString);
-                Logger().i(result);
-              } on PgnParsingException catch (_) {
-                Logger().e('Failed to parse pgn !');
-              }
-            },
-            child: Text('Test parse pgn'),
-          )
-          //////////////////////////////
-        ]),
-      ),
+      body: _screens[_currentScreenIndex],
+      bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _currentScreenIndex,
+          backgroundColor: Colors.blue[200],
+          selectedItemColor: Colors.blue[900],
+          selectedFontSize: 13,
+          unselectedFontSize: 10,
+          iconSize: 30,
+          onTap: _setScreen,
+          items: [
+            BottomNavigationBarItem(
+              label: samplesTitle,
+              icon: SvgPicture.asset(
+                'assets/vectors/gift.svg',
+                width: 20,
+                height: 20,
+                fit: BoxFit.cover,
+              ),
+            ),
+            BottomNavigationBarItem(
+              label: customsTitle,
+              icon: SvgPicture.asset(
+                'assets/vectors/homework.svg',
+                width: 20,
+                height: 20,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ]),
     );
   }
 }

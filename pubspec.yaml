@@ -45,6 +45,7 @@ dependencies:
   chess: ^0.7.0
   chess_vectors_flutter: ^1.0.16
   petitparser: ^4.4.0
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,7 @@ flutter:
     - assets/icon/icon.png
     - assets/i18n/
     - assets/pgn/
+    - assets/vectors/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
