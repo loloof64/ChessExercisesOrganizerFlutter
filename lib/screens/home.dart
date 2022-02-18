@@ -21,15 +21,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async' show Future;
+import 'package:provider/provider.dart';
+import 'package:chess_exercises_organizer/stores/game_store.dart';
 import '../logic/pgn/parser.dart';
 import '../screens/home/samples.dart';
 import '../screens/home/customs.dart';
-
-Future<String> loadPgnFromAsset(
-    {required BuildContext context, required String assetRef}) async {
-  return await DefaultAssetBundle.of(context)
-      .loadString('assets/pgn/$assetRef');
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -40,7 +36,53 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentScreenIndex = 0;
-  List _screens = [SamplesScreen(), CustomsScreen()];
+  late List _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      SamplesScreen(
+        onItemTap: _loadPgn,
+      ),
+      CustomsScreen()
+    ];
+  }
+
+  Future<String> _loadPgnFromAsset(
+      {required BuildContext context, required String assetRef}) async {
+    return await DefaultAssetBundle.of(context)
+        .loadString('assets/pgn/$assetRef.pgn');
+  }
+
+  void _loadPgn(
+      {required String pgnAssetRef, required BuildContext context}) async {
+    try {
+      final pgnContent =
+          await _loadPgnFromAsset(context: context, assetRef: pgnAssetRef);
+      final pgnTree = getPgnData(pgnContent);
+      if (pgnTree.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: I18nText('home.empty_pgn_error'),
+          ),
+        );
+        return;
+      }
+
+      var gameStore = context.read<GameStore>();
+      gameStore.changePgnTree(pgnTree);
+      gameStore.changeSelectedGameIndex(0);
+
+      GoRouter.of(context).go('/game');
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: I18nText('home.pgn_loading_error'),
+        ),
+      );
+    }
+  }
 
   void _setScreen(int index) {
     setState(() {
@@ -61,7 +103,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: _screens[_currentScreenIndex],
+      body: Consumer<GameStore>(
+        builder: (ctx, gameStore, child) {
+          return _screens[_currentScreenIndex];
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _currentScreenIndex,

@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+import 'package:chess_exercises_organizer/stores/game_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:go_router/go_router.dart';
@@ -23,14 +24,13 @@ import "package:chess/chess.dart" as chesslib;
 import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:stockfish/stockfish.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
+import 'package:provider/provider.dart';
 
 class GameScreen extends StatefulWidget {
   final int cpuThinkingTimeMs;
-  final String startFen;
   const GameScreen({
     Key? key,
     this.cpuThinkingTimeMs = 1000,
-    this.startFen = chesslib.Chess.DEFAULT_POSITION,
   }) : super(key: key);
 
   @override
@@ -41,7 +41,7 @@ class _GameScreenState extends State<GameScreen> {
   var _chess;
   var _blackAtBottom = false;
   var _lastMove = <String>[];
-  var _whitePlayerType = PlayerType.computer;
+  var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
@@ -49,7 +49,9 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    _chess = new chesslib.Chess.fromFEN(widget.startFen);
+    var gameStore = context.read<GameStore>();
+    final startPosition = gameStore.getStartPosition();
+    _chess = new chesslib.Chess.fromFEN(startPosition);
     _initStockfish();
   }
 
@@ -122,7 +124,9 @@ class _GameScreenState extends State<GameScreen> {
 
   void _restartGame() {
     setState(() {
-      _chess = new chesslib.Chess.fromFEN(widget.startFen);
+      var gameStore = context.read<GameStore>();
+      final startPosition = gameStore.getStartPosition();
+      _chess = new chesslib.Chess.fromFEN(startPosition);
       _lastMove.clear();
     });
     _makeComputerMove();
@@ -357,17 +361,19 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: isInLandscapeMode
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: content,
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: content,
-              ),
-      ),
+      body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
+        return Center(
+          child: isInLandscapeMode
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: content,
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: content,
+                ),
+        );
+      }),
     );
   }
 }

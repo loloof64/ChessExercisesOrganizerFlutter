@@ -5,6 +5,8 @@ home:
     title: "Accueil"
     samples_tab: "Exemples"
     customs_tab: "Personnels"
+    pgn_loading_error: "Echec de chargement du fichier PGN !"
+    empty_pgn_error: "Aucune partie dans le fichier PGN !"
 game:
     title: "Partie"
     go_back_home: "Revenir à l'accueil"

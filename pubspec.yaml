@@ -46,6 +46,7 @@ dependencies:
   chess_vectors_flutter: ^1.0.16
   petitparser: ^4.4.0
   flutter_svg: ^1.0.3
+  provider: ^6.0.2
 
 dev_dependencies:
   flutter_test:

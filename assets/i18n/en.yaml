@@ -5,6 +5,8 @@ home:
     title: "Home"
     samples_tab: "Samples"
     customs_tab: "Customs"
+    pgn_loading_error: "Failed to load pgn file !"
+    empty_pgn_error: "No game in pgn file !"
 game:
     title: "Game"
     go_back_home: "Go back to home"

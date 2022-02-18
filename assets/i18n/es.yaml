@@ -5,6 +5,8 @@ home:
     title: "Acogida"
     samples_tab: "Ejemplos"
     customs_tab: "Personal"
+    pgn_loading_error: "Error al cargar el archivo pgn !"
+    empty_pgn_error: "¡No hay juego en el archivo pgn!"
 game:
     title: "Juego"
     go_back_home: "Volver a acogida"
