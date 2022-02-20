@@ -291,6 +291,44 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  void _confirmBeforeExit(BuildContext contex) {
+    void closeDialog() {
+      Navigator.of(context).pop();
+    }
+
+    void doExitGame() {
+      Navigator.of(context).pop();
+      GoRouter.of(context).go('/');
+    }
+
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: I18nText('game.exit_game_title'),
+            content: I18nText('game.exit_game_msg'),
+            actions: [
+              DialogActionButton(
+                onPressed: doExitGame,
+                textContent: I18nText(
+                  'buttons.ok',
+                ),
+                backgroundColor: Colors.tealAccent,
+                textColor: Colors.white,
+              ),
+              DialogActionButton(
+                onPressed: closeDialog,
+                textContent: I18nText(
+                  'buttons.cancel',
+                ),
+                textColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final minScreenSize = _getMinScreenSize(context);
@@ -336,9 +374,7 @@ class _GameScreenState extends State<GameScreen> {
       Column(
         children: [
           ElevatedButton(
-            onPressed: () {
-              GoRouter.of(context).go('/');
-            },
+            onPressed: () => _confirmBeforeExit(context),
             child: I18nText('game.go_back_home'),
           ),
           ...tempZone,

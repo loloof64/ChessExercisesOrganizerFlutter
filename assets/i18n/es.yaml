@@ -14,6 +14,8 @@ game:
     player_turn: "Turno"
     restart_game_title: "¿Nueva partida?"
     restart_game_msg: "¿Quiere detener el juego actual y comenzar uno nuevo?"
+    exit_game_title: "¿Salir del juego?"
+    exit_game_msg: "¿Quieres salir del juego actual y volver a la página de inicio?"
 game_termination:
     black_checkmate_white: "Los Negros ha ganado por jaque mate."
     white_checkmate_black: "Los Blancos ha ganado por jaque mate."
