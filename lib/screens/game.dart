@@ -336,6 +336,11 @@ class _GameScreenState extends State<GameScreen> {
 
     const isDebugging = true;
 
+    Future<bool> _onWillPop() async {
+      _confirmBeforeExit(context);
+      return false;
+    }
+
     final tempZone = isDebugging
         ? <Widget>[
             ElevatedButton(
@@ -382,35 +387,38 @@ class _GameScreenState extends State<GameScreen> {
       ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: I18nText('game.title'),
-        actions: [
-          IconButton(
-            onPressed: () => _purposeRestartGame(context),
-            icon: Icon(
-              Icons.restart_alt_outlined,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: I18nText('game.title'),
+          actions: [
+            IconButton(
+              onPressed: () => _purposeRestartGame(context),
+              icon: Icon(
+                Icons.restart_alt_outlined,
+              ),
             ),
-          ),
-          IconButton(
-            icon: Icon(Icons.swap_vert),
-            onPressed: _toggleBoardOrientation,
-          ),
-        ],
+            IconButton(
+              icon: Icon(Icons.swap_vert),
+              onPressed: _toggleBoardOrientation,
+            ),
+          ],
+        ),
+        body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
+          return Center(
+            child: isInLandscapeMode
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: content,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: content,
+                  ),
+          );
+        }),
       ),
-      body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
-        return Center(
-          child: isInLandscapeMode
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: content,
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: content,
-                ),
-        );
-      }),
     );
   }
 }
