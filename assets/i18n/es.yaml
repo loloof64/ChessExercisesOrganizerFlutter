@@ -26,3 +26,12 @@ sample_games:
     KP_K: "Rey + Peón / Rey"
     KQ_K: "Rey + Reina / Rey"
     KR_K: "Rey + Torres / Rey"
+game_selector:
+    title:  "Selector de juego"
+game_goal:
+    white_win: "Los Blancos juegan y ganan."
+    black_win: "Los Negros juegan y ganan."
+    white_draws: "Los Blancos juegan y dibujan."
+    black_draws: "Los Negros juegan y dibujan."
+    white_checkmate: "Los Blancos jaquen mate en {moves} golpes."
+    black_checkmate: "Los Negros jaquen mate en {moves} golpes."

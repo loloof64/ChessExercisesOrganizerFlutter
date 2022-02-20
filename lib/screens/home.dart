@@ -73,8 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
       var gameStore = context.read<GameStore>();
       gameStore.changePgnTree(pgnTree);
       gameStore.changeSelectedGameIndex(0);
+      gameStore.changeFileTitle(
+          FlutterI18n.translate(context, "sample_games.$pgnAssetRef"));
 
-      GoRouter.of(context).go('/game');
+      GoRouter.of(context).go('/game_selector');
     } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

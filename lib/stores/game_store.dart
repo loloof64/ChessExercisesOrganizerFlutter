@@ -26,9 +26,11 @@ class IndexOutOfBoundsException implements Exception {}
 class GameStore extends ChangeNotifier {
   int _selectedGameIndex = 0;
   dynamic _pgnTree = [];
+  String _fileTitle = '';
 
   int get selectedGameIndex => _selectedGameIndex;
   dynamic get pgnTree => _pgnTree;
+  String get fileTitle => _fileTitle;
 
   void changeSelectedGameIndex(int newIndex) {
     if (_pgnTree.isEmpty) throw NoGameAvailableException;
@@ -43,6 +45,18 @@ class GameStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeFileTitle(String newTitle) {
+    _fileTitle = newTitle;
+    notifyListeners();
+  }
+
+  int get gamesCount => _pgnTree.length;
+
+  dynamic getSelectedGame() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    return _pgnTree[_selectedGameIndex];
+  }
+
   String getStartPosition() {
     if (_pgnTree.isEmpty) throw NoGameAvailableException;
     var selectedExercise = _pgnTree[_selectedGameIndex];
@@ -55,5 +69,41 @@ class GameStore extends ChangeNotifier {
     }
 
     return startPosition;
+  }
+
+  void gotoFirstGame() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    _selectedGameIndex = 0;
+    notifyListeners();
+  }
+
+  void gotoLastGame() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    _selectedGameIndex = _pgnTree.length - 1;
+    notifyListeners();
+  }
+
+  void gotoPreviousGame() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    if (_selectedGameIndex > 0) {
+      _selectedGameIndex--;
+      notifyListeners();
+    }
+  }
+
+  void gotoNextGame() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    if (_selectedGameIndex < _pgnTree.length - 1) {
+      _selectedGameIndex++;
+      notifyListeners();
+    }
+  }
+
+  String? getGameGoal() {
+    if (_pgnTree.isEmpty) throw NoGameAvailableException;
+    final selectedGame = _pgnTree[_selectedGameIndex];
+    return selectedGame['tags'].containsKey('Goal')
+        ? selectedGame['tags']['Goal']
+        : null;
   }
 }

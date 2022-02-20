@@ -26,3 +26,12 @@ sample_games:
     KP_K: "King + Pawn / King"
     KQ_K: "King + Queen / King"
     KR_K: "King + Rook / King"
+game_selector:
+    title:  "Game selector"
+game_goal:
+    white_win: "White plays and win."
+    black_win: "Black plays and win."
+    white_draws: "White plays and draws."
+    black_draws: "Black plays and draws."
+    white_checkmate: "White checkmates in {moves} moves."
+    black_checkmate: "Black checkmates in {moves} moves."

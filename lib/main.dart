@@ -25,6 +25,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'screens/home.dart';
 import 'screens/game.dart';
+import 'screens/game_selector.dart';
 import 'stores/game_store.dart';
 
 final gameStore = GameStore();
@@ -79,6 +80,10 @@ class MyApp extends StatelessWidget {
         builder: (context, state) => const GameScreen(
           cpuThinkingTimeMs: 1500,
         ),
+      ),
+      GoRoute(
+        path: '/game_selector',
+        builder: (context, state) => const GameSelectorScreen(),
       ),
     ],
     initialLocation: '/',

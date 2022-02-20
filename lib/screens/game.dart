@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import 'package:chess_exercises_organizer/stores/game_store.dart';
+import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:go_router/go_router.dart';
@@ -374,37 +375,6 @@ class _GameScreenState extends State<GameScreen> {
                 ),
         );
       }),
-    );
-  }
-}
-
-class DialogActionButton extends StatelessWidget {
-  final void Function() onPressed;
-  final Widget textContent;
-  final Color backgroundColor;
-  final Color textColor;
-  const DialogActionButton({
-    Key? key,
-    required this.onPressed,
-    required this.textContent,
-    required this.backgroundColor,
-    required this.textColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: textContent,
-        style: ElevatedButton.styleFrom(
-          primary: backgroundColor,
-          textStyle: TextStyle(
-            color: textColor,
-          ),
-          elevation: 5,
-        ),
-      ),
     );
   }
 }

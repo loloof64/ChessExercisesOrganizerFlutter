@@ -26,3 +26,12 @@ sample_games:
     KP_K: "Roi + Pion / Roi"
     KQ_K: "Roi + Dame / Roi"
     KR_K: "Roi + Tours / Roi"
+game_selector:
+    title:  "Sélecteur de partie"
+game_goal:
+    white_win: "Les Blancs jouent et gagnent."
+    black_win: "Les Noirs jouent et gagnent."
+    white_draws: "Les Blancs jouent et font nulle."
+    black_draws: "Les Noirs jouent et font nulle."
+    white_checkmate: "Les Blancs font échec et mat en {moves} coups."
+    black_checkmate: "Les Noirs font échec et mat en {moves} coups."
