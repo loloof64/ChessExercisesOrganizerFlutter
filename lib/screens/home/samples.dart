@@ -47,7 +47,7 @@ class SamplesScreen extends StatelessWidget {
           title: Text(
             itemText,
             style: TextStyle(
-              fontSize: 26,
+              fontSize: 18,
             ),
           ),
           onTap: () => onItemTap(
