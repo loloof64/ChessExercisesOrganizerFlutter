@@ -93,6 +93,8 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
         builder: (ctx, gameStore, child) {
           return isInLandscapeMode
               ? Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     RichChessboard(
                       fen: fen,
@@ -106,22 +108,27 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                       },
                       engineThinking: false,
                     ),
-                    _DataZone(
-                      fileTitle: fileTitle,
-                      gameIndex: gameIndex,
-                      gamesCount: gamesCount,
-                      goFirstHandler: gotoFirst,
-                      goPreviousHandler: gotoPrevious,
-                      goNextHandler: gotoNext,
-                      goLastHandler: gotoLast,
-                    ),
-                    _ValidationZone(
-                      validationHandler: handleValidation,
-                      cancelationHandler: handleCancelation,
+                    Column(
+                      children: [
+                        _DataZone(
+                          fileTitle: fileTitle,
+                          gameIndex: gameIndex,
+                          gamesCount: gamesCount,
+                          goFirstHandler: gotoFirst,
+                          goPreviousHandler: gotoPrevious,
+                          goNextHandler: gotoNext,
+                          goLastHandler: gotoLast,
+                        ),
+                        _ValidationZone(
+                          validationHandler: handleValidation,
+                          cancelationHandler: handleCancelation,
+                        ),
+                      ],
                     ),
                   ],
                 )
               : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     RichChessboard(
                       fen: fen,
@@ -255,7 +262,7 @@ class _ValidationZone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         DialogActionButton(
           onPressed: validationHandler,
@@ -265,13 +272,16 @@ class _ValidationZone extends StatelessWidget {
           backgroundColor: Colors.tealAccent,
           textColor: Colors.white,
         ),
-        DialogActionButton(
-          onPressed: cancelationHandler,
-          textContent: I18nText(
-            'buttons.cancel',
+        Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: DialogActionButton(
+            onPressed: cancelationHandler,
+            textContent: I18nText(
+              'buttons.cancel',
+            ),
+            textColor: Colors.white,
+            backgroundColor: Colors.redAccent,
           ),
-          textColor: Colors.white,
-          backgroundColor: Colors.redAccent,
         )
       ],
     );
