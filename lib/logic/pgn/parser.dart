@@ -804,59 +804,60 @@ class PgnParserDefinition extends PgnGrammarDefinition {
   @override
   Parser nag() => super.nag().map((each) {
         if (each.length == 2) {
-          return '\$' + each[1];
-        }
-        switch (each[0]) {
-          case '!!':
-            return '\$3';
-          case '??':
-            return '\$4';
-          case '!?':
-            return '\$5';
-          case '?!':
-            return '\$6';
-          case '!':
-            return '\$1';
-          case '?':
-            return '\$2';
-          case '‼':
-            return '\$3';
-          case '⁇':
-            return '\$4';
-          case '⁉':
-            return '\$5';
-          case '⁈':
-            return '\$6';
-          case '□':
-            return '\$7';
-          case '=':
-            return '\$10';
-          case '∞':
-            return '\$13';
-          case '⩲':
-            return '\$14';
-          case '⩱':
-            return '\$15';
-          case '±':
-            return '\$16';
-          case '∓':
-            return '\$17';
-          case '+-':
-            return '\$18';
-          case '-+':
-            return '\$19';
-          case '⨀':
-            return '\$22';
-          case '⟳':
-            return '\$32';
-          case '→':
-            return '\$36';
-          case '↑':
-            return '\$40';
-          case '⇆':
-            return '\$132';
-          case 'D':
-            return '\$220';
+          return '\$' + each[1].toString();
+        } else {
+          switch (each[0]) {
+            case '!!':
+              return '\$3';
+            case '??':
+              return '\$4';
+            case '!?':
+              return '\$5';
+            case '?!':
+              return '\$6';
+            case '!':
+              return '\$1';
+            case '?':
+              return '\$2';
+            case '‼':
+              return '\$3';
+            case '⁇':
+              return '\$4';
+            case '⁉':
+              return '\$5';
+            case '⁈':
+              return '\$6';
+            case '□':
+              return '\$7';
+            case '=':
+              return '\$10';
+            case '∞':
+              return '\$13';
+            case '⩲':
+              return '\$14';
+            case '⩱':
+              return '\$15';
+            case '±':
+              return '\$16';
+            case '∓':
+              return '\$17';
+            case '+-':
+              return '\$18';
+            case '-+':
+              return '\$19';
+            case '⨀':
+              return '\$22';
+            case '⟳':
+              return '\$32';
+            case '→':
+              return '\$36';
+            case '↑':
+              return '\$40';
+            case '⇆':
+              return '\$132';
+            case 'D':
+              return '\$220';
+          }
         }
       });
 }

@@ -466,7 +466,7 @@ class PgnGrammarDefinition extends GrammarDefinition {
 
   Parser promotion() => string('=') & ref0(promFigure);
 
-  Parser nags() => ref0(nag) & ref0(ws) & ref0(nags);
+  Parser nags() => ref0(nag) & ref0(ws) & ref0(nags).optional();
 
   Parser nag() =>
       (string('\$') & ref0(integer)) |

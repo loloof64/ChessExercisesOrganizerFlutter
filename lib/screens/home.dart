@@ -26,6 +26,7 @@ import 'package:chess_exercises_organizer/stores/game_store.dart';
 import '../logic/pgn/parser.dart';
 import '../screens/home/samples.dart';
 import '../screens/home/customs.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -77,7 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
           FlutterI18n.translate(context, "sample_games.$pgnAssetRef"));
 
       GoRouter.of(context).go('/game_selector');
-    } catch (_) {
+    } catch (e, stack) {
+      Logger().e(stack);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: I18nText('home.pgn_loading_error'),
