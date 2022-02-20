@@ -219,7 +219,13 @@ class _DataZone extends StatelessWidget {
           padding: EdgeInsets.only(top: 5),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Text(fileTitle),
+            child: Text(
+              fileTitle,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
           ),
         ),
         Row(
