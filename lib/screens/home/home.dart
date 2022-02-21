@@ -23,9 +23,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async' show Future;
 import 'package:provider/provider.dart';
 import 'package:chess_exercises_organizer/stores/game_store.dart';
-import '../logic/pgn/parser.dart';
-import '../screens/home/samples.dart';
-import '../screens/home/customs.dart';
+import 'package:chess_exercises_organizer/logic/pgn/parser.dart';
+import 'package:chess_exercises_organizer/screens/home/samples.dart';
+import 'package:chess_exercises_organizer/screens/home/customs.dart';
 import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -329,19 +329,8 @@ class _GameScreenState extends State<GameScreen> {
         });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final minScreenSize = _getMinScreenSize(context);
-    final isInLandscapeMode = _isInLandscapeMode(context);
-
-    const isDebugging = true;
-
-    Future<bool> _onWillPop() async {
-      _confirmBeforeExit(context);
-      return false;
-    }
-
-    final tempZone = isDebugging
+  List<Widget> _buildTempZone({required bool isDebugging}) {
+    return isDebugging
         ? <Widget>[
             ElevatedButton(
               onPressed: _disposeStockfish,
@@ -363,12 +352,14 @@ class _GameScreenState extends State<GameScreen> {
             )
           ]
         : <Widget>[];
+  }
 
-    final content = <Widget>[
+  List<Widget> _buildGameContent({required double chessBoardSize}) {
+    return <Widget>[
       RichChessboard(
         engineThinking: _engineThinking,
         fen: _chess.fen,
-        size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+        size: chessBoardSize,
         onMove: _tryMakingMove,
         orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
         whitePlayerType: _whitePlayerType,
@@ -382,10 +373,21 @@ class _GameScreenState extends State<GameScreen> {
             onPressed: () => _confirmBeforeExit(context),
             child: I18nText('game.go_back_home'),
           ),
-          ...tempZone,
+          ..._buildTempZone(isDebugging: true),
         ],
       ),
     ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final minScreenSize = _getMinScreenSize(context);
+    final isInLandscapeMode = _isInLandscapeMode(context);
+
+    Future<bool> _onWillPop() async {
+      _confirmBeforeExit(context);
+      return false;
+    }
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -410,11 +412,17 @@ class _GameScreenState extends State<GameScreen> {
             child: isInLandscapeMode
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: content,
+                    children: _buildGameContent(
+                      chessBoardSize:
+                          minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+                    ),
                   )
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: content,
+                    children: _buildGameContent(
+                      chessBoardSize:
+                          minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+                    ),
                   ),
           );
         }),

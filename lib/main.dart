@@ -23,7 +23,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'screens/home.dart';
+import 'screens/home/home.dart';
 import 'screens/game.dart';
 import 'screens/game_selector.dart';
 import 'stores/game_store.dart';
