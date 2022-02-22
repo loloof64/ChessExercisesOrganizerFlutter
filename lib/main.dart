@@ -18,7 +18,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/loaders/decoders/yaml_decode_strategy.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
@@ -40,9 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (context) => GameStore())],
-      child: MaterialApp.router(
-        routeInformationParser: _router.routeInformationParser,
-        routerDelegate: _router.routerDelegate,
+      child: MaterialApp(
         localizationsDelegates: [
           FlutterI18nDelegate(
             translationLoader: FileTranslationLoader(
@@ -65,27 +62,12 @@ class MyApp extends StatelessWidget {
           Locale('fr', ''),
           Locale('es', ''),
         ],
+        routes: {
+          '/': (ctx) => HomeScreen(),
+          GameSelectorScreen.routeName: (ctx) => GameSelectorScreen(),
+          GameScreen.routerName: (ctx) => GameScreen(),
+        },
       ),
     );
   }
-
-  final _router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: '/game',
-        builder: (context, state) => const GameScreen(
-          cpuThinkingTimeMs: 1500,
-        ),
-      ),
-      GoRoute(
-        path: '/game_selector',
-        builder: (context, state) => const GameSelectorScreen(),
-      ),
-    ],
-    initialLocation: '/',
-  );
 }

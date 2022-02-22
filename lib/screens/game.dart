@@ -19,7 +19,6 @@ import 'package:chess_exercises_organizer/stores/game_store.dart';
 import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
 import 'package:chess_exercises_organizer/components/richboard.dart';
@@ -28,6 +27,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:provider/provider.dart';
 
 class GameScreen extends StatefulWidget {
+  static const routerName = 'game';
   final int cpuThinkingTimeMs;
   const GameScreen({
     Key? key,
@@ -297,8 +297,10 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     void doExitGame() {
+      // Exiting dialog
       Navigator.of(context).pop();
-      GoRouter.of(context).go('/');
+      // Returning to home page
+      Navigator.of(context).pop();
     }
 
     showDialog(

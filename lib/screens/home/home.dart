@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import 'package:chess_exercises_organizer/screens/game_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async' show Future;
@@ -29,6 +29,7 @@ import 'package:chess_exercises_organizer/screens/home/customs.dart';
 import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const routerName = 'home';
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
       gameStore.changeFileTitle(
           FlutterI18n.translate(context, "sample_games.$pgnAssetRef"));
 
-      GoRouter.of(context).go('/game_selector');
+      Navigator.of(context).pushNamed(GameSelectorScreen.routeName);
     } catch (e, stack) {
       Logger().e(stack);
       ScaffoldMessenger.of(context).showSnackBar(

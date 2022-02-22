@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import 'package:chess_exercises_organizer/screens/game.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +26,7 @@ import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
 
 class GameSelectorScreen extends StatefulWidget {
+  static const routeName = 'game-selector';
   const GameSelectorScreen({Key? key}) : super(key: key);
 
   @override
@@ -62,11 +63,12 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
   }
 
   void handleValidation() {
-    GoRouter.of(context).go('/game');
+    Navigator.of(context).pushReplacementNamed(GameScreen.routerName);
   }
 
   void handleCancelation() {
-    GoRouter.of(context).go('/');
+    // Returing to home page
+    Navigator.of(context).pop();
   }
 
   @override
