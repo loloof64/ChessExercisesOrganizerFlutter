@@ -15,6 +15,7 @@ game:
     restart_game_msg: "Voulez-vous arrêter la partie en cours et en démarrer une nouvelle ?"
     exit_game_title: "Quiter la partie ?"
     exit_game_msg: "Voulez-vous quitter la partie en cours et revenir à l'accueil ?"
+    solution_loading_error: "Echec de chragement de la solution !"
 game_termination:
     black_checkmate_white: "Les Noirs gagnent par échec et mat."
     white_checkmate_black: "Les Blancs gagnent par échec et mat."

@@ -349,6 +349,19 @@ class _GameScreenState extends State<GameScreen> {
       return false;
     }
 
+    if (_historyTree == null) {
+      Future<void>.delayed(Duration(milliseconds: 500), () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: I18nText(
+              'game.solution_loading_error',
+            ),
+          ),
+        );
+        return;
+      }).whenComplete(() => null);
+    }
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(

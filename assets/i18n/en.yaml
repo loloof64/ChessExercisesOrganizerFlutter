@@ -15,6 +15,7 @@ game:
     restart_game_msg: "Do you want to finish current game and start a new one ?"
     exit_game_title: "Exit game ?"
     exit_game_msg: "Do you want to exit current game and return to home page ?"
+    solution_loading_error: "Could not load solution !"
 game_termination:
     black_checkmate_white: "Black has won by checkmate."
     white_checkmate_black: "White has won by checkmate."
