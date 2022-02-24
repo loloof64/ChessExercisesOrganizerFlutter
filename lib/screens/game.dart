@@ -28,6 +28,7 @@ import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:stockfish/stockfish.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 
 class GameScreen extends StatefulWidget {
   static const routerName = 'game';
@@ -49,11 +50,18 @@ class _GameScreenState extends State<GameScreen> {
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
+  HistoryNode? _historyTree = null;
 
   @override
   void initState() {
     super.initState();
     var gameStore = context.read<GameStore>();
+    try {
+      _historyTree = buildHistoryTreeFromPgnTree(gameStore.getSelectedGame());
+    } catch (e, stacktrace) {
+      Logger().e(stacktrace);
+      _historyTree = null;
+    }
     final startPosition = gameStore.getStartPosition();
     _chess = new chesslib.Chess.fromFEN(startPosition);
     _initStockfish();
@@ -334,78 +342,8 @@ class _GameScreenState extends State<GameScreen> {
         });
   }
 
-  List<Widget> _buildTempZone({required bool isDebugging}) {
-    return isDebugging
-        ? <Widget>[
-            ElevatedButton(
-              onPressed: _disposeStockfish,
-              child: Wrap(
-                children: [
-                  Icon(Icons.warning_rounded),
-                  Text(
-                    'Dispose stockfish before reload !',
-                  )
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _initStockfish,
-              child: Wrap(children: [
-                Icon(Icons.warning_rounded),
-                Text('Restart stockfish after reload !'),
-              ]),
-            )
-          ]
-        : <Widget>[];
-  }
-
-  List<Widget> _buildGameContent({required double chessBoardSize}) {
-    var gameStore = context.read<GameStore>();
-    var historyTree;
-    try {
-      historyTree = buildHistoryTreeFromPgnTree(gameStore.getSelectedGame());
-    } catch (e) {
-      historyTree = null;
-    }
-    final isInLandscapeMode = _isInLandscapeMode(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final historyComponentWidth =
-        isInLandscapeMode ? (screenWidth - chessBoardSize) * 0.9 : screenWidth;
-    final historyComponentHeight = isInLandscapeMode
-        ? screenHeight * 0.9
-        : (screenHeight - chessBoardSize) * 0.9 - 200;
-
-    return <Widget>[
-      RichChessboard(
-        engineThinking: _engineThinking,
-        fen: _chess.fen,
-        size: chessBoardSize,
-        onMove: _tryMakingMove,
-        orientation: _blackAtBottom ? BoardColor.BLACK : BoardColor.WHITE,
-        whitePlayerType: _whitePlayerType,
-        blackPlayerType: _blackPlayerType,
-        lastMoveToHighlight: _lastMove,
-        onPromote: () => _handlePromotion(context),
-      ),
-      Column(
-        children: [
-          ..._buildTempZone(isDebugging: true),
-          ChessHistory(
-              defaultWidth: historyComponentWidth,
-              defaultHeight: historyComponentHeight,
-              historyTree: historyTree,
-              onMoveDoneUpdateRequest: ({required moveDone}) {}),
-        ],
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
-    final minScreenSize = _getMinScreenSize(context);
-    final isInLandscapeMode = _isInLandscapeMode(context);
-
     Future<bool> _onWillPop() async {
       _confirmBeforeExit(context);
       return false;
@@ -430,24 +368,171 @@ class _GameScreenState extends State<GameScreen> {
           ],
         ),
         body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
-          var chessBoardSize = minScreenSize * (isInLandscapeMode ? 0.75 : 1.0);
           return Center(
-            child: isInLandscapeMode
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: _buildGameContent(
-                      chessBoardSize: chessBoardSize,
-                    ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: _buildGameContent(
-                      chessBoardSize: chessBoardSize,
-                    ),
-                  ),
+            child: GameContent(
+              isDebugging: true,
+              boardOrientationBlackBottom: _blackAtBottom,
+              boardPosition: _chess.fen,
+              engineThinking: _engineThinking,
+              whitePlayerType: _whitePlayerType,
+              blackPlayerType: _blackPlayerType,
+              lastMove: _lastMove,
+              historyTree: _historyTree,
+              initStockfish: _initStockfish,
+              disposeStockfish: _disposeStockfish,
+              tryMakingMove: _tryMakingMove,
+              handlePromotion: _handlePromotion,
+            ),
           );
         }),
       ),
     );
+  }
+}
+
+class TempZone extends StatelessWidget {
+  final bool isDebugging;
+  final void Function() initStockfish;
+  final void Function() disposeStockfish;
+  const TempZone(
+      {Key? key,
+      required this.isDebugging,
+      required this.initStockfish,
+      required this.disposeStockfish})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        children: isDebugging
+            ? <Widget>[
+                ElevatedButton(
+                  onPressed: disposeStockfish,
+                  child: Wrap(
+                    children: [
+                      Icon(Icons.warning_rounded),
+                      Text(
+                        'Dispose stockfish before reload !',
+                      )
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: initStockfish,
+                  child: Wrap(children: [
+                    Icon(Icons.warning_rounded),
+                    Text('Restart stockfish after reload !'),
+                  ]),
+                )
+              ]
+            : <Widget>[]);
+  }
+}
+
+class GameContent extends StatelessWidget {
+  final bool isDebugging;
+  final bool engineThinking;
+  final bool boardOrientationBlackBottom;
+  final String boardPosition;
+  final PlayerType whitePlayerType;
+  final PlayerType blackPlayerType;
+  final List<String> lastMove;
+  final HistoryNode? historyTree;
+  final void Function() initStockfish;
+  final void Function() disposeStockfish;
+  final void Function({required ShortMove move}) tryMakingMove;
+  final Future<PieceType?> Function(BuildContext context) handlePromotion;
+
+  const GameContent({
+    Key? key,
+    required this.isDebugging,
+    required this.engineThinking,
+    required this.boardPosition,
+    required this.boardOrientationBlackBottom,
+    required this.whitePlayerType,
+    required this.blackPlayerType,
+    required this.lastMove,
+    required this.historyTree,
+    required this.initStockfish,
+    required this.disposeStockfish,
+    required this.tryMakingMove,
+    required this.handlePromotion,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isInLandscapeMode =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final minScreenSize =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+    final chessBoardSize = minScreenSize * (isInLandscapeMode ? 0.75 : 1.0);
+
+    final historyComponentWidth =
+        isInLandscapeMode ? (screenWidth - chessBoardSize) * 0.9 : screenWidth;
+    final historyComponentHeight = isInLandscapeMode
+        ? screenHeight * 0.9
+        : (screenHeight - chessBoardSize) * 0.9 - 200;
+
+    final boardOrientation =
+        boardOrientationBlackBottom ? BoardColor.BLACK : BoardColor.WHITE;
+    return isInLandscapeMode
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              RichChessboard(
+                engineThinking: engineThinking,
+                fen: boardPosition,
+                size: chessBoardSize,
+                onMove: tryMakingMove,
+                orientation: boardOrientation,
+                whitePlayerType: whitePlayerType,
+                blackPlayerType: blackPlayerType,
+                lastMoveToHighlight: lastMove,
+                onPromote: () => handlePromotion(context),
+              ),
+              Column(
+                children: [
+                  TempZone(
+                    isDebugging: isDebugging,
+                    initStockfish: initStockfish,
+                    disposeStockfish: disposeStockfish,
+                  ),
+                  ChessHistory(
+                      defaultWidth: historyComponentWidth,
+                      defaultHeight: historyComponentHeight,
+                      historyTree: historyTree,
+                      onMoveDoneUpdateRequest: ({required moveDone}) {}),
+                ],
+              ),
+            ],
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              RichChessboard(
+                engineThinking: engineThinking,
+                fen: boardPosition,
+                size: chessBoardSize,
+                onMove: tryMakingMove,
+                orientation: boardOrientation,
+                whitePlayerType: whitePlayerType,
+                blackPlayerType: blackPlayerType,
+                lastMoveToHighlight: lastMove,
+                onPromote: () => handlePromotion(context),
+              ),
+              TempZone(
+                isDebugging: isDebugging,
+                initStockfish: initStockfish,
+                disposeStockfish: disposeStockfish,
+              ),
+              ChessHistory(
+                  defaultWidth: historyComponentWidth,
+                  defaultHeight: historyComponentHeight,
+                  historyTree: historyTree,
+                  onMoveDoneUpdateRequest: ({required moveDone}) {}),
+            ],
+          );
   }
 }

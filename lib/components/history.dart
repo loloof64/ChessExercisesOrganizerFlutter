@@ -18,6 +18,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
+import 'package:flutter_i18n/widgets/I18nText.dart';
 
 class ChessHistory extends StatefulWidget {
   final HistoryNode? historyTree;
