@@ -1,5 +1,5 @@
 /*
-    Chess exercises organizer : oad your chess exercises and train yourself against the device.
+    Chess exercises organizer : load your chess exercises and train yourself against the device.
     Copyright (C) 2022  Laurent Bernabe <laurent.bernabe@gmail.com>
 
     This program is free software: you can redistribute it and/or modify

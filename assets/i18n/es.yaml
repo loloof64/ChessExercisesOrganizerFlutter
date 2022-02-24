@@ -9,7 +9,6 @@ home:
     empty_pgn_error: "¡No hay juego en el archivo pgn!"
 game:
     title: "Juego"
-    go_back_home: "Volver a acogida"
     choose_promotion_title: "Elige la pieza de promoción"
     player_turn: "Turno"
     restart_game_title: "¿Nueva partida?"

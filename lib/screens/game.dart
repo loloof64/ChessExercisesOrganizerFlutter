@@ -1,5 +1,5 @@
 /*
-    Chess exercises organizer : oad your chess exercises and train yourself against the device.
+    Chess exercises organizer : load your chess exercises and train yourself against the device.
     Copyright (C) 2022  Laurent Bernabe <laurent.bernabe@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+import 'package:chess_exercises_organizer/components/history.dart';
+import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
 import 'package:chess_exercises_organizer/stores/game_store.dart';
 import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
 import 'package:flutter/material.dart';
@@ -336,7 +339,7 @@ class _GameScreenState extends State<GameScreen> {
         ? <Widget>[
             ElevatedButton(
               onPressed: _disposeStockfish,
-              child: Row(
+              child: Wrap(
                 children: [
                   Icon(Icons.warning_rounded),
                   Text(
@@ -347,7 +350,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
             ElevatedButton(
               onPressed: _initStockfish,
-              child: Row(children: [
+              child: Wrap(children: [
                 Icon(Icons.warning_rounded),
                 Text('Restart stockfish after reload !'),
               ]),
@@ -357,6 +360,22 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   List<Widget> _buildGameContent({required double chessBoardSize}) {
+    var gameStore = context.read<GameStore>();
+    var historyTree;
+    try {
+      historyTree = buildHistoryTreeFromPgnTree(gameStore.getSelectedGame());
+    } catch (e) {
+      historyTree = null;
+    }
+    final isInLandscapeMode = _isInLandscapeMode(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final historyComponentWidth =
+        isInLandscapeMode ? (screenWidth - chessBoardSize) * 0.9 : screenWidth;
+    final historyComponentHeight = isInLandscapeMode
+        ? screenHeight * 0.9
+        : (screenHeight - chessBoardSize) * 0.9 - 200;
+
     return <Widget>[
       RichChessboard(
         engineThinking: _engineThinking,
@@ -371,11 +390,12 @@ class _GameScreenState extends State<GameScreen> {
       ),
       Column(
         children: [
-          ElevatedButton(
-            onPressed: () => _confirmBeforeExit(context),
-            child: I18nText('game.go_back_home'),
-          ),
           ..._buildTempZone(isDebugging: true),
+          ChessHistory(
+              defaultWidth: historyComponentWidth,
+              defaultHeight: historyComponentHeight,
+              historyTree: historyTree,
+              onMoveDoneUpdateRequest: ({required moveDone}) {}),
         ],
       ),
     ];
@@ -410,20 +430,19 @@ class _GameScreenState extends State<GameScreen> {
           ],
         ),
         body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
+          var chessBoardSize = minScreenSize * (isInLandscapeMode ? 0.75 : 1.0);
           return Center(
             child: isInLandscapeMode
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: _buildGameContent(
-                      chessBoardSize:
-                          minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+                      chessBoardSize: chessBoardSize,
                     ),
                   )
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: _buildGameContent(
-                      chessBoardSize:
-                          minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
+                      chessBoardSize: chessBoardSize,
                     ),
                   ),
           );
