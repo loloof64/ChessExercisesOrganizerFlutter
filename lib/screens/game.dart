@@ -383,7 +383,7 @@ class _GameScreenState extends State<GameScreen> {
         body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
           return Center(
             child: GameContent(
-              isDebugging: true,
+              isDebugging: false,
               boardOrientationBlackBottom: _blackAtBottom,
               boardPosition: _chess.fen,
               engineThinking: _engineThinking,

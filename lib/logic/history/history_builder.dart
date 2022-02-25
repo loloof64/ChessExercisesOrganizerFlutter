@@ -156,9 +156,13 @@ HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(
               pgnNodes: currentPgnNodeVariation, boardState: clonedBoardState);
           final rightParenthesisNode = HistoryNode(caption: ')');
 
-          leftParenthesisNode.next = variationNode;
-          variationNode.next = rightParenthesisNode;
+          var variationLastNode = variationNode;
+          while (variationLastNode.next != null) {
+            variationLastNode = variationLastNode.next!;
+          }
 
+          leftParenthesisNode.next = variationNode;
+          variationLastNode.next = rightParenthesisNode;
           nextHistoryNode.variations.add(leftParenthesisNode);
         });
       }
