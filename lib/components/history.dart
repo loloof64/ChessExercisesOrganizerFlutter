@@ -60,13 +60,14 @@ class _ChessHistoryState extends State<ChessHistory> {
 
       if (currentHistoryNode.variations.isNotEmpty) {
         currentHistoryNode.variations.forEach((currentVariation) {
-          result.addAll(
-              _recursivelyBuildWidgetsFromHistoryTree(currentVariation));
+          final currentVariationResult =
+              _recursivelyBuildWidgetsFromHistoryTree(currentVariation);
+          result.addAll(currentVariationResult);
         });
       }
 
       currentHistoryNode = currentHistoryNode.next;
-    } while (currentHistoryNode?.next != null);
+    } while (currentHistoryNode != null);
 
     return result;
   }

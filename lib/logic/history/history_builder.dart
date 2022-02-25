@@ -130,6 +130,7 @@ HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(
     final isAResultNode = currentPgnNode.containsKey('result');
     if (isAResultNode) {
       currentHistoryNode.result = currentPgnNode['result'];
+      continue;
     } else {
       final needToAddMoveNumber = currentPgnNode['whiteTurn'] && index > 0;
       if (needToAddMoveNumber) {
@@ -157,7 +158,8 @@ HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(
 
           leftParenthesisNode.next = variationNode;
           variationNode.next = rightParenthesisNode;
-          nextHistoryNode.next = leftParenthesisNode;
+
+          nextHistoryNode.variations.add(leftParenthesisNode);
         });
       }
       boardState.move(currentMoveSan);
