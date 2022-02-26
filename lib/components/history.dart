@@ -21,14 +21,14 @@ import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
 
 class ChessHistory extends StatefulWidget {
   final HistoryNode? historyTree;
-  final double defaultWidth;
-  final double defaultHeight;
+  final double width;
+  final double height;
   final void Function({required Move moveDone}) onMoveDoneUpdateRequest;
   const ChessHistory(
       {Key? key,
       required this.historyTree,
-      required this.defaultWidth,
-      required this.defaultHeight,
+      required this.width,
+      required this.height,
       required this.onMoveDoneUpdateRequest})
       : super(key: key);
 
@@ -80,7 +80,8 @@ class _ChessHistoryState extends State<ChessHistory> {
     return SingleChildScrollView(
       child: Container(
         color: Colors.amber[100],
-        width: 300,
+        width: widget.width,
+        height: widget.height,
         child: Wrap(
           spacing: 10,
           runSpacing: 6,

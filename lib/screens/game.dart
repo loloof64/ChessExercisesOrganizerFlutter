@@ -490,8 +490,8 @@ class GameContent extends StatelessWidget {
     final historyComponentWidth =
         isInLandscapeMode ? (screenWidth - chessBoardSize) * 0.9 : screenWidth;
     final historyComponentHeight = isInLandscapeMode
-        ? screenHeight * 0.9
-        : (screenHeight - chessBoardSize) * 0.9 - 200;
+        ? screenHeight * 0.75
+        : (screenHeight - chessBoardSize) * 0.68;
 
     final boardOrientation =
         boardOrientationBlackBottom ? BoardColor.BLACK : BoardColor.WHITE;
@@ -518,8 +518,8 @@ class GameContent extends StatelessWidget {
                     disposeStockfish: disposeStockfish,
                   ),
                   ChessHistory(
-                      defaultWidth: historyComponentWidth,
-                      defaultHeight: historyComponentHeight,
+                      width: historyComponentWidth,
+                      height: historyComponentHeight,
                       historyTree: historyTree,
                       onMoveDoneUpdateRequest: ({required moveDone}) {}),
                 ],
@@ -546,8 +546,8 @@ class GameContent extends StatelessWidget {
                 disposeStockfish: disposeStockfish,
               ),
               ChessHistory(
-                  defaultWidth: historyComponentWidth,
-                  defaultHeight: historyComponentHeight,
+                  width: historyComponentWidth,
+                  height: historyComponentHeight,
                   historyTree: historyTree,
                   onMoveDoneUpdateRequest: ({required moveDone}) {}),
             ],
