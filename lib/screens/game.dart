@@ -75,18 +75,19 @@ class _GameScreenState extends State<GameScreen> {
     });
     final startPosition = gameStore.getStartPosition();
     _chess = new chesslib.Chess.fromFEN(startPosition);
-    _initStockfish();
+    _initStockfish().then((value) {});
   }
 
   Future<void> _initStockfish() async {
     _stockfish = new Stockfish();
     _stockfish.stdout.listen(_processStockfishLine);
-    await waitUntilStockfishReady();
-    _stockfish.stdin = 'isready';
-    _makeComputerMove();
+    _waitUntilStockfishReady().then((value) {
+      _stockfish.stdin = 'isready';
+      _makeComputerMove();
+    });
   }
 
-  Future<void> waitUntilStockfishReady() async {
+  Future<void> _waitUntilStockfishReady() async {
     while (!_stockfishReady()) {
       await Future.delayed(Duration(milliseconds: 600));
     }
