@@ -177,13 +177,23 @@ HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(
   return rootHistoryNode;
 }
 
+extension _CellIndexConverter on int {
+  int convertSquareIndexFromChessLib() {
+    final file = this % 8;
+    final rank = this ~/ 16;
+    return file + 8 * rank;
+  }
+}
+
 Move _getMoveFromSan(
     {required String san, required chesslib.Chess boardState}) {
   final boardStateClone = chesslib.Chess.fromFEN(boardState.fen);
   boardStateClone.move(san);
   final boardLogicMove = boardStateClone.undo_move()!;
-  final moveFrom = Cell.fromSquareIndex(boardLogicMove.from);
-  final moveTo = Cell.fromSquareIndex(boardLogicMove.to);
+  final moveFrom = Cell.fromSquareIndex(
+      boardLogicMove.from.convertSquareIndexFromChessLib());
+  final moveTo =
+      Cell.fromSquareIndex(boardLogicMove.to.convertSquareIndexFromChessLib());
 
   return Move(from: moveFrom, to: moveTo);
 }
