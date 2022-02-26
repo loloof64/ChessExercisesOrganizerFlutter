@@ -50,20 +50,45 @@ class _GameScreenState extends State<GameScreen> {
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
-  HistoryNode? _historyTree = null;
+  HistoryNode? _gameHistoryTree = null;
+  HistoryNode? _solutionHistoryTree = null;
 
   @override
   void initState() {
     super.initState();
+    final gameStore = context.read<GameStore>();
+    _loadSolutionHistory().then((value) => null);
+
+    final startPosition = gameStore.getStartPosition();
+    _chess = new chesslib.Chess.fromFEN(startPosition);
+    _initStockfish().then((value) {});
+    _resetGameHistory();
+  }
+
+  void _resetGameHistory() {
+    final gameStore = context.read<GameStore>();
+    final startPosition = gameStore.getStartPosition();
+    final parts = startPosition.split(' ');
+    final whiteTurn = parts[1] == 'w';
+    final moveNumber = parts[5];
+    final caption = "${moveNumber}${whiteTurn ? '.' : '...'}";
+    setState(() {
+      _gameHistoryTree = HistoryNode(caption: caption);
+    });
+  }
+
+  Future<void> _loadSolutionHistory() async {
     var gameStore = context.read<GameStore>();
-    buildHistoryTreeFromPgnTree(gameStore.getSelectedGame()).then((value) {
+    try {
+      final historyTree =
+          await buildHistoryTreeFromPgnTree(gameStore.getSelectedGame());
       setState(() {
-        _historyTree = value;
+        _solutionHistoryTree = historyTree;
       });
-    }).catchError((err, stacktrace) {
+    } catch (err, stacktrace) {
       Logger().e(stacktrace);
       setState(() {
-        _historyTree = null;
+        _gameHistoryTree = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -72,10 +97,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
       );
-    });
-    final startPosition = gameStore.getStartPosition();
-    _chess = new chesslib.Chess.fromFEN(startPosition);
-    _initStockfish().then((value) {});
+    }
   }
 
   Future<void> _initStockfish() async {
@@ -395,7 +417,7 @@ class _GameScreenState extends State<GameScreen> {
               whitePlayerType: _whitePlayerType,
               blackPlayerType: _blackPlayerType,
               lastMove: _lastMove,
-              historyTree: _historyTree,
+              historyTree: _gameHistoryTree,
               initStockfish: _initStockfish,
               disposeStockfish: _disposeStockfish,
               tryMakingMove: _tryMakingMove,
