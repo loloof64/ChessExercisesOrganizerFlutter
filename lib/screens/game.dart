@@ -56,12 +56,23 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     var gameStore = context.read<GameStore>();
-    try {
-      _historyTree = buildHistoryTreeFromPgnTree(gameStore.getSelectedGame());
-    } catch (e, stacktrace) {
+    buildHistoryTreeFromPgnTree(gameStore.getSelectedGame()).then((value) {
+      setState(() {
+        _historyTree = value;
+      });
+    }).catchError((err, stacktrace) {
       Logger().e(stacktrace);
-      _historyTree = null;
-    }
+      setState(() {
+        _historyTree = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: I18nText(
+            'game.solution_loading_error',
+          ),
+        ),
+      );
+    });
     final startPosition = gameStore.getStartPosition();
     _chess = new chesslib.Chess.fromFEN(startPosition);
     _initStockfish();
@@ -347,19 +358,6 @@ class _GameScreenState extends State<GameScreen> {
     Future<bool> _onWillPop() async {
       _confirmBeforeExit(context);
       return false;
-    }
-
-    if (_historyTree == null) {
-      Future<void>.delayed(Duration(milliseconds: 500), () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: I18nText(
-              'game.solution_loading_error',
-            ),
-          ),
-        );
-        return;
-      }).whenComplete(() => null);
     }
 
     return WillPopScope(

@@ -107,16 +107,19 @@ class HistoryNode {
   }
 }
 
-HistoryNode buildHistoryTreeFromPgnTree(dynamic singleGamePgnTree) {
-  final pgnMoves = singleGamePgnTree['moves'];
-  final startPositionTag = singleGamePgnTree['tags']['FEN'];
-  final startPosition = startPositionTag != null
-      ? startPositionTag
-      : chesslib.Chess.DEFAULT_POSITION;
-  final boardState = chesslib.Chess.fromFEN(startPosition);
-  final result = _recursivelyBuildHistoryTreeFromPgnTree(
-      pgnNodes: pgnMoves, boardState: boardState);
-  return result;
+Future<HistoryNode?> buildHistoryTreeFromPgnTree(
+    dynamic singleGamePgnTree) async {
+  return Future(() {
+    final pgnMoves = singleGamePgnTree['moves'];
+    final startPositionTag = singleGamePgnTree['tags']['FEN'];
+    final startPosition = startPositionTag != null
+        ? startPositionTag
+        : chesslib.Chess.DEFAULT_POSITION;
+    final boardState = chesslib.Chess.fromFEN(startPosition);
+    final result = _recursivelyBuildHistoryTreeFromPgnTree(
+        pgnNodes: pgnMoves, boardState: boardState);
+    return result;
+  });
 }
 
 HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(

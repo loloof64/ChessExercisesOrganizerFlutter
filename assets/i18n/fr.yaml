@@ -15,7 +15,7 @@ game:
     restart_game_msg: "Voulez-vous arrêter la partie en cours et en démarrer une nouvelle ?"
     exit_game_title: "Quiter la partie ?"
     exit_game_msg: "Voulez-vous quitter la partie en cours et revenir à l'accueil ?"
-    solution_loading_error: "Echec de chragement de la solution !"
+    solution_loading_error: "Echec de chargement de la solution !"
 game_termination:
     black_checkmate_white: "Les Noirs gagnent par échec et mat."
     white_checkmate_black: "Les Blancs gagnent par échec et mat."
@@ -27,7 +27,7 @@ sample_games:
     K2R_K: "Roi + 2 Tours / Roi"
     KP_K: "Roi + Pion / Roi"
     KQ_K: "Roi + Dame / Roi"
-    KR_K: "Roi + Tours / Roi"
+    KR_K: "Roi + Tour / Roi"
 game_selector:
     title:  "Sélecteur de partie"
 game_goal:
