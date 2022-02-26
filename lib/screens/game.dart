@@ -87,10 +87,12 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> waitUntilStockfishReady() async {
-    while (_stockfish.state.value != StockfishState.ready) {
+    while (!_stockfishReady()) {
       await Future.delayed(Duration(milliseconds: 600));
     }
   }
+
+  bool _stockfishReady() => _stockfish.state.value == StockfishState.ready;
 
   _disposeStockfish() {
     _stockfish.dispose();
@@ -325,32 +327,36 @@ class _GameScreenState extends State<GameScreen> {
       Navigator.of(context).pop();
     }
 
-    showDialog(
-        context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialog(
-            title: I18nText('game.exit_game_title'),
-            content: I18nText('game.exit_game_msg'),
-            actions: [
-              DialogActionButton(
-                onPressed: doExitGame,
-                textContent: I18nText(
-                  'buttons.ok',
+    final dialogShowingDelayMs = _stockfishReady() ? 0 : 800;
+
+    Future.delayed(Duration(milliseconds: dialogShowingDelayMs), () {
+      showDialog(
+          context: context,
+          builder: (BuildContext ctx) {
+            return AlertDialog(
+              title: I18nText('game.exit_game_title'),
+              content: I18nText('game.exit_game_msg'),
+              actions: [
+                DialogActionButton(
+                  onPressed: doExitGame,
+                  textContent: I18nText(
+                    'buttons.ok',
+                  ),
+                  backgroundColor: Colors.tealAccent,
+                  textColor: Colors.white,
                 ),
-                backgroundColor: Colors.tealAccent,
-                textColor: Colors.white,
-              ),
-              DialogActionButton(
-                onPressed: closeDialog,
-                textContent: I18nText(
-                  'buttons.cancel',
-                ),
-                textColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              )
-            ],
-          );
-        });
+                DialogActionButton(
+                  onPressed: closeDialog,
+                  textContent: I18nText(
+                    'buttons.cancel',
+                  ),
+                  textColor: Colors.white,
+                  backgroundColor: Colors.redAccent,
+                )
+              ],
+            );
+          });
+    });
   }
 
   @override
