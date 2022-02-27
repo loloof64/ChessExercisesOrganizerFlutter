@@ -43,8 +43,13 @@ class _ChessHistoryState extends State<ChessHistory> {
     HistoryNode? currentHistoryNode = tree;
 
     final currentPosition = currentHistoryNode.fen;
+    final fontSize = widget.width * 0.05;
+
     do {
-      final textComponent = Text(currentHistoryNode!.caption);
+      final textComponent = Text(
+        currentHistoryNode!.caption,
+        style: TextStyle(fontSize: fontSize),
+      );
       result.add(
         currentPosition == null
             ? textComponent
