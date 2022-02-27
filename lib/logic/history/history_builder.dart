@@ -177,7 +177,7 @@ HistoryNode _recursivelyBuildHistoryTreeFromPgnTree(
   return rootHistoryNode;
 }
 
-extension _CellIndexConverter on int {
+extension CellIndexConverter on int {
   int convertSquareIndexFromChessLib() {
     final file = this % 8;
     final rank = this ~/ 16;

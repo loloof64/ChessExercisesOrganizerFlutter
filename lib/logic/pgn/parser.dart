@@ -19,7 +19,6 @@ import 'dart:ffi';
 
 import 'package:petitparser/petitparser.dart';
 import 'grammar.dart';
-import 'package:logger/logger.dart';
 
 class PgnParsingException implements Exception {}
 

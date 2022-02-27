@@ -43,14 +43,16 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  var _chess;
+  late chesslib.Chess _chess;
   var _blackAtBottom = false;
-  var _lastMove = <String>[];
+  var _lastMoveArrowCoordinates = <String>[];
   var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
+  var _gameStart = true;
   HistoryNode? _gameHistoryTree = null;
+  HistoryNode? _currentGameHistoryNode = null;
   HistoryNode? _solutionHistoryTree = null;
 
   @override
@@ -74,6 +76,7 @@ class _GameScreenState extends State<GameScreen> {
     final caption = "${moveNumber}${whiteTurn ? '.' : '...'}";
     setState(() {
       _gameHistoryTree = HistoryNode(caption: caption);
+      _currentGameHistoryNode = _gameHistoryTree;
     });
   }
 
@@ -88,7 +91,7 @@ class _GameScreenState extends State<GameScreen> {
     } catch (err, stacktrace) {
       Logger().e(stacktrace);
       setState(() {
-        _gameHistoryTree = null;
+        _solutionHistoryTree = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -118,7 +121,7 @@ class _GameScreenState extends State<GameScreen> {
   bool _stockfishReady() => _stockfish.state.value == StockfishState.ready;
 
   _disposeStockfish() {
-    _stockfish.dispose();
+    if (_stockfishReady()) _stockfish.dispose();
     _stockfish = null;
   }
 
@@ -152,10 +155,12 @@ class _GameScreenState extends State<GameScreen> {
         'to': to,
         'promotion': promotion?.toLowerCase(),
       });
+      _engineThinking = false;
+      _lastMoveArrowCoordinates.clear();
+      _lastMoveArrowCoordinates.addAll([from, to]);
+      _addMoveToHistory();
       setState(() {
-        _engineThinking = false;
-        _lastMove.clear();
-        _lastMove.addAll([from, to]);
+        _gameStart = false;
       });
       if (_chess.game_over) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +180,9 @@ class _GameScreenState extends State<GameScreen> {
       var gameStore = context.read<GameStore>();
       final startPosition = gameStore.getStartPosition();
       _chess = new chesslib.Chess.fromFEN(startPosition);
-      _lastMove.clear();
+      _resetGameHistory();
+      _lastMoveArrowCoordinates.clear();
+      _gameStart = true;
     });
     _makeComputerMove();
   }
@@ -291,6 +298,55 @@ class _GameScreenState extends State<GameScreen> {
     return result;
   }
 
+  /*
+    Must be called after a move has just been
+    added to _chess (Chess class instance)
+    Do not update state itself.
+  */
+  void _addMoveToHistory() {
+    if (_currentGameHistoryNode != null) {
+      final whiteMove = _chess.turn == chesslib.Color.WHITE;
+      final lastPlayedMove = _chess.history.last.move;
+
+      /*
+      We need to know if it was white move before the move which
+      we want to add history node(s).
+      */
+      if (!whiteMove && !_gameStart) {
+        final moveNumber = _chess.move_number;
+        final moveNumberCaption = "${moveNumber}.";
+        final nextHistoryNode = HistoryNode(caption: moveNumberCaption);
+        _currentGameHistoryNode?.next = nextHistoryNode;
+        _currentGameHistoryNode = nextHistoryNode;
+      }
+
+      // In order to get move SAN, it must not be done on board yet !
+      // So we rollback the move, then we'll make it happen again.
+      _chess.undo_move();
+      final san = _chess.move_to_san(lastPlayedMove);
+      _chess.make_move(lastPlayedMove);
+
+      // Move has been played: we need to revert player turn for the SAN.
+      final fan = san.toFan(whiteMove: !whiteMove);
+      final relatedMoveFromSquareIndex = CellIndexConverter(lastPlayedMove.from)
+          .convertSquareIndexFromChessLib();
+      final relatedMoveToSquareIndex = CellIndexConverter(lastPlayedMove.to)
+          .convertSquareIndexFromChessLib();
+      final relatedMove = Move(
+        from: Cell.fromSquareIndex(relatedMoveFromSquareIndex),
+        to: Cell.fromSquareIndex(relatedMoveToSquareIndex),
+      );
+
+      final nextHistoryNode = HistoryNode(
+        caption: fan,
+        fen: _chess.fen,
+        relatedMove: relatedMove,
+      );
+      _currentGameHistoryNode?.next = nextHistoryNode;
+      _currentGameHistoryNode = nextHistoryNode;
+    }
+  }
+
   void _tryMakingMove({required ShortMove move}) {
     final success = _chess.move(<String, String?>{
       'from': move.from,
@@ -301,9 +357,11 @@ class _GameScreenState extends State<GameScreen> {
       ),
     });
     if (success) {
+      _lastMoveArrowCoordinates.clear();
+      _lastMoveArrowCoordinates.addAll([move.from, move.to]);
+      _addMoveToHistory();
       setState(() {
-        _lastMove.clear();
-        _lastMove.addAll([move.from, move.to]);
+        _gameStart = false;
       });
       if (_chess.game_over) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -416,7 +474,7 @@ class _GameScreenState extends State<GameScreen> {
               engineThinking: _engineThinking,
               whitePlayerType: _whitePlayerType,
               blackPlayerType: _blackPlayerType,
-              lastMove: _lastMove,
+              lastMove: _lastMoveArrowCoordinates,
               historyTree: _gameHistoryTree,
               initStockfish: _initStockfish,
               disposeStockfish: _disposeStockfish,
