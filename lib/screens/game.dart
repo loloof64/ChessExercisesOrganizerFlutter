@@ -163,6 +163,14 @@ class _GameScreenState extends State<GameScreen> {
         _gameStart = false;
       });
       if (_chess.game_over) {
+        final gameResultString = _getGameResultString();
+        final nextHistoryNode = HistoryNode(caption: gameResultString);
+
+        setState(() {
+          _currentGameHistoryNode?.next = nextHistoryNode;
+          _currentGameHistoryNode = nextHistoryNode;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: _getGameEndedType(),
@@ -364,6 +372,14 @@ class _GameScreenState extends State<GameScreen> {
         _gameStart = false;
       });
       if (_chess.game_over) {
+        final gameResultString = _getGameResultString();
+        final nextHistoryNode = HistoryNode(caption: gameResultString);
+
+        setState(() {
+          _currentGameHistoryNode?.next = nextHistoryNode;
+          _currentGameHistoryNode = nextHistoryNode;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: _getGameEndedType(),
@@ -485,6 +501,15 @@ class _GameScreenState extends State<GameScreen> {
         }),
       ),
     );
+  }
+
+  String _getGameResultString() {
+    if (_chess.in_checkmate)
+      return _chess.turn == chesslib.Color.WHITE ? '0-1' : '1-0';
+    else if (_chess.in_draw) {
+      return '1/2-1/2';
+    }
+    return '*';
   }
 }
 
