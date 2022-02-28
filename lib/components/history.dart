@@ -82,15 +82,17 @@ class _ChessHistoryState extends State<ChessHistory> {
     final widgetsList = (widget.historyTree) != null
         ? _recursivelyBuildWidgetsFromHistoryTree(widget.historyTree!)
         : <Widget>[];
-    return SingleChildScrollView(
-      child: Container(
-        color: Colors.amber[100],
-        width: widget.width,
-        height: widget.height,
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 6,
-          children: widgetsList,
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Expanded(
+          child: Container(
+            color: Colors.amber[100],
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 6,
+              children: widgetsList,
+            ),
+          ),
         ),
       ),
     );

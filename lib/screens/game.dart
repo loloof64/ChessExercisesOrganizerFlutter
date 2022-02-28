@@ -46,7 +46,7 @@ class _GameScreenState extends State<GameScreen> {
   late chesslib.Chess _chess;
   var _blackAtBottom = false;
   var _lastMoveArrowCoordinates = <String>[];
-  var _whitePlayerType = PlayerType.human;
+  var _whitePlayerType = PlayerType.computer;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
@@ -58,13 +58,13 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    final gameStore = context.read<GameStore>();
-    _loadSolutionHistory().then((value) => null);
-
-    final startPosition = gameStore.getStartPosition();
-    _chess = new chesslib.Chess.fromFEN(startPosition);
-    _initStockfish().then((value) {});
-    _resetGameHistory();
+    _initStockfish().then((_) => null).catchError((e, stacktrace) {
+      Logger().e(stacktrace);
+    });
+    _loadSolutionHistory().then((_) => null).catchError((e, stacktrace) {
+      Logger().e(stacktrace);
+    });
+    _restartGame();
   }
 
   void _resetGameHistory() {
@@ -125,7 +125,8 @@ class _GameScreenState extends State<GameScreen> {
     _stockfish = null;
   }
 
-  void _makeComputerMove() {
+  Future<void> _makeComputerMove() async {
+    await _waitUntilStockfishReady();
     final whiteTurn = _chess.turn == chesslib.Color.WHITE;
     final humanTurn = (whiteTurn && (_whitePlayerType == PlayerType.human)) ||
         (!whiteTurn && (_blackPlayerType == PlayerType.human));
@@ -144,7 +145,6 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _processStockfishLine(String line) {
-    print(line);
     if (line.startsWith('bestmove')) {
       final moveUci = line.split(' ')[1];
       final from = moveUci.substring(0, 2);
@@ -155,13 +155,17 @@ class _GameScreenState extends State<GameScreen> {
         'to': to,
         'promotion': promotion?.toLowerCase(),
       });
-      _engineThinking = false;
-      _lastMoveArrowCoordinates.clear();
-      _lastMoveArrowCoordinates.addAll([from, to]);
-      _addMoveToHistory();
-      setState(() {
-        _gameStart = false;
-      });
+      if (mounted) {
+        setState(() {
+          _engineThinking = false;
+          _lastMoveArrowCoordinates.clear();
+          _lastMoveArrowCoordinates.addAll([from, to]);
+          _addMoveToHistory();
+          _gameStart = false;
+        });
+      } else {
+        return;
+      }
       if (_chess.game_over) {
         final gameResultString = _getGameResultString();
         final nextHistoryNode = HistoryNode(caption: gameResultString);
@@ -365,10 +369,10 @@ class _GameScreenState extends State<GameScreen> {
       ),
     });
     if (success) {
-      _lastMoveArrowCoordinates.clear();
-      _lastMoveArrowCoordinates.addAll([move.from, move.to]);
-      _addMoveToHistory();
       setState(() {
+        _lastMoveArrowCoordinates.clear();
+        _lastMoveArrowCoordinates.addAll([move.from, move.to]);
+        _addMoveToHistory();
         _gameStart = false;
       });
       if (_chess.game_over) {
