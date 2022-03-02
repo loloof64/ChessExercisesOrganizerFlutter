@@ -19,7 +19,7 @@
 import 'package:flutter/material.dart';
 import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
 
-class ChessHistory extends StatefulWidget {
+class ChessHistory extends StatelessWidget {
   final HistoryNode? historyTree;
   final double width;
   final double height;
@@ -32,18 +32,13 @@ class ChessHistory extends StatefulWidget {
       required this.onMoveDoneUpdateRequest})
       : super(key: key);
 
-  @override
-  _ChessHistoryState createState() => _ChessHistoryState();
-}
-
-class _ChessHistoryState extends State<ChessHistory> {
   List<Widget> _recursivelyBuildWidgetsFromHistoryTree(HistoryNode tree) {
     final result = <Widget>[];
 
     HistoryNode? currentHistoryNode = tree;
 
     final currentPosition = currentHistoryNode.fen;
-    final fontSize = widget.width * 0.05;
+    final fontSize = width * 0.05;
 
     do {
       final textComponent = Text(
@@ -54,7 +49,7 @@ class _ChessHistoryState extends State<ChessHistory> {
         currentPosition == null
             ? textComponent
             : TextButton(
-                onPressed: () => widget.onMoveDoneUpdateRequest(
+                onPressed: () => onMoveDoneUpdateRequest(
                     moveDone: currentHistoryNode!.relatedMove!),
                 child: textComponent),
       );
@@ -79,8 +74,8 @@ class _ChessHistoryState extends State<ChessHistory> {
 
   @override
   Widget build(BuildContext context) {
-    final widgetsList = (widget.historyTree) != null
-        ? _recursivelyBuildWidgetsFromHistoryTree(widget.historyTree!)
+    final widgetsList = (historyTree) != null
+        ? _recursivelyBuildWidgetsFromHistoryTree(historyTree!)
         : <Widget>[];
     return Expanded(
       child: SingleChildScrollView(
