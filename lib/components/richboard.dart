@@ -26,7 +26,6 @@ enum PlayerType {
 
 class RichChessboard extends StatelessWidget {
   final String fen;
-  final double size;
   final void Function({required ShortMove move}) onMove;
   final BoardColor orientation;
   final List<String> lastMoveToHighlight;
@@ -44,7 +43,6 @@ class RichChessboard extends StatelessWidget {
   const RichChessboard({
     Key? key,
     required this.fen,
-    required this.size,
     required this.onMove,
     required this.orientation,
     required this.whitePlayerType,
@@ -60,69 +58,78 @@ class RichChessboard extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPlayerTurn({required double size}) {
     final isWhiteTurn = fen.split(' ')[1] == 'w';
-    final playerTurn = Positioned(
+    return Positioned(
       child: _PlayerTurn(size: size * 0.05, whiteTurn: isWhiteTurn),
       bottom: size * 0.001,
       right: size * 0.001,
     );
+  }
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          color: Colors.indigo.shade300,
-          width: size,
-          height: size,
-          child: Stack(
-            children: [
-              ...getFilesCoordinates(
-                boardSize: size,
-                top: true,
-                reversed: orientation == BoardColor.BLACK,
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: ((ctx, constraints) {
+        final size = constraints.maxWidth < constraints.maxHeight
+            ? constraints.maxWidth
+            : constraints.maxHeight;
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              color: Colors.indigo.shade300,
+              width: size,
+              height: size,
+              child: Stack(
+                children: [
+                  ...getFilesCoordinates(
+                    boardSize: size,
+                    top: true,
+                    reversed: orientation == BoardColor.BLACK,
+                  ),
+                  ...getFilesCoordinates(
+                    boardSize: size,
+                    top: false,
+                    reversed: orientation == BoardColor.BLACK,
+                  ),
+                  ...getRanksCoordinates(
+                    boardSize: size,
+                    left: true,
+                    reversed: orientation == BoardColor.BLACK,
+                  ),
+                  ...getRanksCoordinates(
+                    boardSize: size,
+                    left: false,
+                    reversed: orientation == BoardColor.BLACK,
+                  ),
+                  _buildPlayerTurn(size: size),
+                ],
               ),
-              ...getFilesCoordinates(
-                boardSize: size,
-                top: false,
-                reversed: orientation == BoardColor.BLACK,
-              ),
-              ...getRanksCoordinates(
-                boardSize: size,
-                left: true,
-                reversed: orientation == BoardColor.BLACK,
-              ),
-              ...getRanksCoordinates(
-                boardSize: size,
-                left: false,
-                reversed: orientation == BoardColor.BLACK,
-              ),
-              playerTurn,
-            ],
-          ),
-        ),
-        Chessboard(
-          fen: fen,
-          size: size * 0.9,
-          onMove: _processMove,
-          onPromote: onPromote,
-          orientation: orientation,
-          lastMoveHighlightColor: Colors.indigoAccent.shade200,
-          selectionHighlightColor: Colors.greenAccent,
-          lastMove: lastMoveToHighlight,
-        ),
-        SizedBox(
-          width: currentPlayerIsHuman() ? 1 : size,
-          height: currentPlayerIsHuman() ? 1 : size,
-          child: engineThinking
-              ? CircularProgressIndicator(
-                  backgroundColor: Colors.teal,
-                  strokeWidth: 8,
-                )
-              : Text(''),
-        ),
-      ],
+            ),
+            Chessboard(
+              fen: fen,
+              size: size * 0.9,
+              onMove: _processMove,
+              onPromote: onPromote,
+              orientation: orientation,
+              lastMoveHighlightColor: Colors.indigoAccent.shade200,
+              selectionHighlightColor: Colors.greenAccent,
+              lastMove: lastMoveToHighlight,
+            ),
+            SizedBox(
+              width: currentPlayerIsHuman() ? 1 : size,
+              height: currentPlayerIsHuman() ? 1 : size,
+              child: engineThinking
+                  ? CircularProgressIndicator(
+                      backgroundColor: Colors.teal,
+                      strokeWidth: 8,
+                    )
+                  : Text(''),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

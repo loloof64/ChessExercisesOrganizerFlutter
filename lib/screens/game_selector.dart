@@ -79,10 +79,6 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
     final gamesCount = gameStore.gamesCount;
     final isInLandscapeMode =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final minScreenSize =
-        screenWidth < screenHeight ? screenWidth : screenHeight;
     final fen = gameStore.getStartPosition();
     final isWhiteMove = fen.split(' ')[1] == 'w';
     final boardOrientation = isWhiteMove ? BoardColor.WHITE : BoardColor.BLACK;
@@ -100,7 +96,6 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                   children: [
                     RichChessboard(
                       fen: fen,
-                      size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
                       onMove: ({required ShortMove move}) {},
                       orientation: boardOrientation,
                       whitePlayerType: PlayerType.computer,
@@ -134,7 +129,6 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                   children: [
                     RichChessboard(
                       fen: fen,
-                      size: minScreenSize * (isInLandscapeMode ? 0.75 : 1.0),
                       onMove: ({required ShortMove move}) {},
                       orientation: boardOrientation,
                       whitePlayerType: PlayerType.computer,

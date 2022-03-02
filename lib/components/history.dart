@@ -21,29 +21,23 @@ import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
 
 class ChessHistory extends StatelessWidget {
   final HistoryNode? historyTree;
-  final double width;
-  final double height;
   final List<Widget> children;
   const ChessHistory({
     Key? key,
     required this.historyTree,
-    required this.width,
-    required this.height,
     required this.children,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        child: Expanded(
-          child: Container(
-            color: Colors.amber[100],
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 6,
-              children: children,
-            ),
+      child: Container(
+        color: Colors.amber[100],
+        child: SingleChildScrollView(
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 6,
+            children: children,
           ),
         ),
       ),

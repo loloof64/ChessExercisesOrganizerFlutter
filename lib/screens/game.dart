@@ -504,7 +504,6 @@ class _GameScreenState extends State<GameScreen> {
         body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
           return Center(
             child: GameContent(
-              isDebugging: false,
               boardOrientationBlackBottom: _blackAtBottom,
               boardPosition: _chess.fen,
               engineThinking: _engineThinking,
@@ -574,7 +573,6 @@ class TempZone extends StatelessWidget {
 }
 
 class GameContent extends StatelessWidget {
-  final bool isDebugging;
   final bool engineThinking;
   final bool boardOrientationBlackBottom;
   final String boardPosition;
@@ -590,7 +588,6 @@ class GameContent extends StatelessWidget {
 
   const GameContent({
     Key? key,
-    required this.isDebugging,
     required this.engineThinking,
     required this.boardPosition,
     required this.boardOrientationBlackBottom,
@@ -609,17 +606,6 @@ class GameContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final isInLandscapeMode =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final minScreenSize =
-        screenWidth < screenHeight ? screenWidth : screenHeight;
-    final chessBoardSize = minScreenSize * (isInLandscapeMode ? 0.75 : 1.0);
-
-    final historyComponentWidth =
-        isInLandscapeMode ? (screenWidth - chessBoardSize) * 0.9 : screenWidth;
-    final historyComponentHeight = isInLandscapeMode
-        ? screenHeight * 0.75
-        : (screenHeight - chessBoardSize) * 0.68;
 
     final boardOrientation =
         boardOrientationBlackBottom ? BoardColor.BLACK : BoardColor.WHITE;
@@ -631,7 +617,6 @@ class GameContent extends StatelessWidget {
               RichChessboard(
                 engineThinking: engineThinking,
                 fen: boardPosition,
-                size: chessBoardSize,
                 onMove: tryMakingMove,
                 orientation: boardOrientation,
                 whitePlayerType: whitePlayerType,
@@ -639,21 +624,9 @@ class GameContent extends StatelessWidget {
                 lastMoveToHighlight: lastMove,
                 onPromote: () => handlePromotion(context),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TempZone(
-                    isDebugging: isDebugging,
-                    initStockfish: initStockfish,
-                    disposeStockfish: disposeStockfish,
-                  ),
-                  ChessHistory(
-                    width: historyComponentWidth,
-                    height: historyComponentHeight,
-                    historyTree: historyTree,
-                    children: historyChildren,
-                  ),
-                ],
+              ChessHistory(
+                historyTree: historyTree,
+                children: historyChildren,
               ),
             ],
           )
@@ -663,7 +636,6 @@ class GameContent extends StatelessWidget {
               RichChessboard(
                 engineThinking: engineThinking,
                 fen: boardPosition,
-                size: chessBoardSize,
                 onMove: tryMakingMove,
                 orientation: boardOrientation,
                 whitePlayerType: whitePlayerType,
@@ -671,14 +643,7 @@ class GameContent extends StatelessWidget {
                 lastMoveToHighlight: lastMove,
                 onPromote: () => handlePromotion(context),
               ),
-              TempZone(
-                isDebugging: isDebugging,
-                initStockfish: initStockfish,
-                disposeStockfish: disposeStockfish,
-              ),
               ChessHistory(
-                width: historyComponentWidth,
-                height: historyComponentHeight,
                 historyTree: historyTree,
                 children: historyChildren,
               ),
