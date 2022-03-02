@@ -211,6 +211,7 @@ class _GameScreenState extends State<GameScreen> {
       _lastMoveArrowCoordinates.clear();
       _gameStart = true;
     });
+    _updateHistoryChildrenWidgets();
     _makeComputerMove();
   }
 
