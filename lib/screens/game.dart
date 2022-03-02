@@ -612,7 +612,7 @@ class GameContent extends StatelessWidget {
     return isInLandscapeMode
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               RichChessboard(
                 engineThinking: engineThinking,
@@ -632,6 +632,7 @@ class GameContent extends StatelessWidget {
           )
         : Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               RichChessboard(
                 engineThinking: engineThinking,
