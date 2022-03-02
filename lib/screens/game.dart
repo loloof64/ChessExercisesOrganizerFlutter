@@ -54,6 +54,7 @@ class _GameScreenState extends State<GameScreen> {
   HistoryNode? _gameHistoryTree = null;
   HistoryNode? _currentGameHistoryNode = null;
   HistoryNode? _solutionHistoryTree = null;
+  List<Widget> _historyWidgetsTree = [];
 
   @override
   void initState() {
@@ -66,6 +67,20 @@ class _GameScreenState extends State<GameScreen> {
     });
     _restartGame();
   }
+
+  void _updateHistoryChildrenWidgets() {
+    setState(() {
+      if (_gameHistoryTree != null) {
+        _historyWidgetsTree = recursivelyBuildWidgetsFromHistoryTree(
+          fontSize: 20,
+          tree: _gameHistoryTree!,
+          onMoveDoneUpdateRequest: onMoveDoneUpdateRequest,
+        );
+      }
+    });
+  }
+
+  void onMoveDoneUpdateRequest({required Move moveDone}) {}
 
   void _resetGameHistory() {
     final gameStore = context.read<GameStore>();
@@ -356,6 +371,7 @@ class _GameScreenState extends State<GameScreen> {
       );
       _currentGameHistoryNode?.next = nextHistoryNode;
       _currentGameHistoryNode = nextHistoryNode;
+      _updateHistoryChildrenWidgets();
     }
   }
 
@@ -500,6 +516,7 @@ class _GameScreenState extends State<GameScreen> {
               disposeStockfish: _disposeStockfish,
               tryMakingMove: _tryMakingMove,
               handlePromotion: _handlePromotion,
+              historyChildren: _historyWidgetsTree,
             ),
           );
         }),
@@ -565,6 +582,7 @@ class GameContent extends StatelessWidget {
   final PlayerType blackPlayerType;
   final List<String> lastMove;
   final HistoryNode? historyTree;
+  final List<Widget> historyChildren;
   final void Function() initStockfish;
   final void Function() disposeStockfish;
   final void Function({required ShortMove move}) tryMakingMove;
@@ -580,6 +598,7 @@ class GameContent extends StatelessWidget {
     required this.blackPlayerType,
     required this.lastMove,
     required this.historyTree,
+    required this.historyChildren,
     required this.initStockfish,
     required this.disposeStockfish,
     required this.tryMakingMove,
@@ -629,10 +648,11 @@ class GameContent extends StatelessWidget {
                     disposeStockfish: disposeStockfish,
                   ),
                   ChessHistory(
-                      width: historyComponentWidth,
-                      height: historyComponentHeight,
-                      historyTree: historyTree,
-                      onMoveDoneUpdateRequest: ({required moveDone}) {}),
+                    width: historyComponentWidth,
+                    height: historyComponentHeight,
+                    historyTree: historyTree,
+                    children: historyChildren,
+                  ),
                 ],
               ),
             ],
@@ -657,10 +677,11 @@ class GameContent extends StatelessWidget {
                 disposeStockfish: disposeStockfish,
               ),
               ChessHistory(
-                  width: historyComponentWidth,
-                  height: historyComponentHeight,
-                  historyTree: historyTree,
-                  onMoveDoneUpdateRequest: ({required moveDone}) {}),
+                width: historyComponentWidth,
+                height: historyComponentHeight,
+                historyTree: historyTree,
+                children: historyChildren,
+              ),
             ],
           );
   }

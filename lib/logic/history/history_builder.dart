@@ -17,6 +17,7 @@
 */
 
 import "package:chess/chess.dart" as chesslib;
+import 'package:flutter/material.dart';
 
 extension FanConverter on String {
   String toFan({required bool whiteMove}) {
@@ -183,6 +184,52 @@ extension CellIndexConverter on int {
     final rank = this ~/ 16;
     return file + 8 * rank;
   }
+}
+
+List<Widget> recursivelyBuildWidgetsFromHistoryTree({
+  required HistoryNode tree,
+  required double fontSize,
+  required void Function({required Move moveDone}) onMoveDoneUpdateRequest,
+}) {
+  final result = <Widget>[];
+
+  HistoryNode? currentHistoryNode = tree;
+
+  final currentPosition = currentHistoryNode.fen;
+
+  do {
+    final textComponent = Text(
+      currentHistoryNode!.caption,
+      style: TextStyle(fontSize: fontSize),
+    );
+    result.add(
+      currentPosition == null
+          ? textComponent
+          : TextButton(
+              onPressed: () => onMoveDoneUpdateRequest(
+                  moveDone: currentHistoryNode!.relatedMove!),
+              child: textComponent),
+    );
+
+    if (currentHistoryNode.result != null) {
+      result.add(Text(currentHistoryNode.result!));
+    }
+
+    if (currentHistoryNode.variations.isNotEmpty) {
+      currentHistoryNode.variations.forEach((currentVariation) {
+        final currentVariationResult = recursivelyBuildWidgetsFromHistoryTree(
+          tree: currentVariation,
+          fontSize: fontSize,
+          onMoveDoneUpdateRequest: onMoveDoneUpdateRequest,
+        );
+        result.addAll(currentVariationResult);
+      });
+    }
+
+    currentHistoryNode = currentHistoryNode.next;
+  } while (currentHistoryNode != null);
+
+  return result;
 }
 
 Move _getMoveFromSan(

@@ -23,60 +23,17 @@ class ChessHistory extends StatelessWidget {
   final HistoryNode? historyTree;
   final double width;
   final double height;
-  final void Function({required Move moveDone}) onMoveDoneUpdateRequest;
-  const ChessHistory(
-      {Key? key,
-      required this.historyTree,
-      required this.width,
-      required this.height,
-      required this.onMoveDoneUpdateRequest})
-      : super(key: key);
-
-  List<Widget> _recursivelyBuildWidgetsFromHistoryTree(HistoryNode tree) {
-    final result = <Widget>[];
-
-    HistoryNode? currentHistoryNode = tree;
-
-    final currentPosition = currentHistoryNode.fen;
-    final fontSize = width * 0.05;
-
-    do {
-      final textComponent = Text(
-        currentHistoryNode!.caption,
-        style: TextStyle(fontSize: fontSize),
-      );
-      result.add(
-        currentPosition == null
-            ? textComponent
-            : TextButton(
-                onPressed: () => onMoveDoneUpdateRequest(
-                    moveDone: currentHistoryNode!.relatedMove!),
-                child: textComponent),
-      );
-
-      if (currentHistoryNode.result != null) {
-        result.add(Text(currentHistoryNode.result!));
-      }
-
-      if (currentHistoryNode.variations.isNotEmpty) {
-        currentHistoryNode.variations.forEach((currentVariation) {
-          final currentVariationResult =
-              _recursivelyBuildWidgetsFromHistoryTree(currentVariation);
-          result.addAll(currentVariationResult);
-        });
-      }
-
-      currentHistoryNode = currentHistoryNode.next;
-    } while (currentHistoryNode != null);
-
-    return result;
-  }
+  final List<Widget> children;
+  const ChessHistory({
+    Key? key,
+    required this.historyTree,
+    required this.width,
+    required this.height,
+    required this.children,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final widgetsList = (historyTree) != null
-        ? _recursivelyBuildWidgetsFromHistoryTree(historyTree!)
-        : <Widget>[];
     return Expanded(
       child: SingleChildScrollView(
         child: Expanded(
@@ -85,7 +42,7 @@ class ChessHistory extends StatelessWidget {
             child: Wrap(
               spacing: 10,
               runSpacing: 6,
-              children: widgetsList,
+              children: children,
             ),
           ),
         ),
