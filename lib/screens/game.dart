@@ -227,13 +227,18 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       var gameStore = context.read<GameStore>();
       final startPosition = gameStore.getStartPosition();
+      final whiteStartGame = startPosition.split(' ')[1] == 'w';
+
       _lastInputPositionForCpuComputation = '';
       _chess = new chesslib.Chess.fromFEN(startPosition);
       _resetGameHistory();
       _lastMoveArrowCoordinates.clear();
-      //todo adapt
-      _whitePlayerType = PlayerType.human;
-      _blackPlayerType = PlayerType.computer;
+
+      _whitePlayerType =
+          whiteStartGame ? PlayerType.human : PlayerType.computer;
+      _blackPlayerType =
+          whiteStartGame ? PlayerType.computer : PlayerType.human;
+
       _gameStart = true;
       _gameInProgress = true;
     });
