@@ -51,6 +51,7 @@ class _GameScreenState extends State<GameScreen> {
   var _stockfish;
   var _engineThinking = false;
   var _gameStart = true;
+  var _gameInProgress = false;
   var _lastInputPositionForCpuComputation = '';
   HistoryNode? _gameHistoryTree = null;
   HistoryNode? _currentGameHistoryNode = null;
@@ -174,6 +175,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _processStockfishLine(String line) {
+    if (!_gameInProgress) return;
     if (line.startsWith('bestmove')) {
       final moveUci = line.split(' ')[1];
       final from = moveUci.substring(0, 2);
@@ -202,6 +204,7 @@ class _GameScreenState extends State<GameScreen> {
         setState(() {
           _currentGameHistoryNode?.next = nextHistoryNode;
           _currentGameHistoryNode = nextHistoryNode;
+          _gameInProgress = false;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -225,21 +228,18 @@ class _GameScreenState extends State<GameScreen> {
       _resetGameHistory();
       _lastMoveArrowCoordinates.clear();
       _gameStart = true;
+      _gameInProgress = true;
     });
     _updateHistoryChildrenWidgets();
     _makeComputerMove();
   }
 
+  void _startNewGameConfirmationAction() {
+    Navigator.of(context).pop();
+    _restartGame();
+  }
+
   void _purposeRestartGame(BuildContext context) {
-    void closeDialog() {
-      Navigator.of(context).pop();
-    }
-
-    void doStartNewGame() {
-      closeDialog();
-      _restartGame();
-    }
-
     final isStartPosition = _chess.fen == chesslib.Chess.DEFAULT_POSITION;
     if (isStartPosition) return;
 
@@ -251,7 +251,7 @@ class _GameScreenState extends State<GameScreen> {
           content: I18nText('game.restart_game_msg'),
           actions: [
             DialogActionButton(
-              onPressed: doStartNewGame,
+              onPressed: _startNewGameConfirmationAction,
               textContent: I18nText(
                 'buttons.ok',
               ),
@@ -259,7 +259,7 @@ class _GameScreenState extends State<GameScreen> {
               textColor: Colors.white,
             ),
             DialogActionButton(
-              onPressed: closeDialog,
+              onPressed: () => Navigator.of(context).pop(),
               textContent: I18nText(
                 'buttons.cancel',
               ),
@@ -272,9 +272,56 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  void _stopCurrentGameConfirmationAction() {
+    Navigator.of(context).pop();
+    _stopCurrentGame();
+  }
+
+  void _stopCurrentGame() {
+    setState(() {
+      _engineThinking = false;
+      _gameInProgress = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [I18nText('game.stopped')],
+        ),
+      ),
+    );
+  }
+
+  void _purposeStopGame(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext innerCtx) {
+          return AlertDialog(
+            title: I18nText('game.stop_game_title'),
+            content: I18nText('game.stop_game_msg'),
+            actions: [
+              DialogActionButton(
+                onPressed: _stopCurrentGameConfirmationAction,
+                textContent: I18nText(
+                  'buttons.ok',
+                ),
+                backgroundColor: Colors.tealAccent,
+                textColor: Colors.white,
+              ),
+              DialogActionButton(
+                onPressed: () => Navigator.of(context).pop(),
+                textContent: I18nText(
+                  'buttons.cancel',
+                ),
+                textColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              )
+            ],
+          );
+        });
+  }
+
   Future<PieceType?> _handlePromotion(BuildContext context) async {
     final promotion = await _showPromotionDialog(context);
-    _makeComputerMove();
     return promotion;
   }
 
@@ -414,6 +461,7 @@ class _GameScreenState extends State<GameScreen> {
         setState(() {
           _currentGameHistoryNode?.next = nextHistoryNode;
           _currentGameHistoryNode = nextHistoryNode;
+          _gameInProgress = false;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -515,6 +563,12 @@ class _GameScreenState extends State<GameScreen> {
               icon: Icon(Icons.swap_vert),
               onPressed: _toggleBoardOrientation,
             ),
+            IconButton(
+              onPressed: () => _purposeStopGame(context),
+              icon: Icon(
+                Icons.dangerous,
+              ),
+            )
           ],
         ),
         body: Consumer<GameStore>(builder: (ctx, gameStore, child) {
@@ -546,45 +600,6 @@ class _GameScreenState extends State<GameScreen> {
       return '1/2-1/2';
     }
     return '*';
-  }
-}
-
-class TempZone extends StatelessWidget {
-  final bool isDebugging;
-  final void Function() initStockfish;
-  final void Function() disposeStockfish;
-  const TempZone(
-      {Key? key,
-      required this.isDebugging,
-      required this.initStockfish,
-      required this.disposeStockfish})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        children: isDebugging
-            ? <Widget>[
-                ElevatedButton(
-                  onPressed: disposeStockfish,
-                  child: Wrap(
-                    children: [
-                      Icon(Icons.warning_rounded),
-                      Text(
-                        'Dispose stockfish before reload !',
-                      )
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: initStockfish,
-                  child: Wrap(children: [
-                    Icon(Icons.warning_rounded),
-                    Text('Restart stockfish after reload !'),
-                  ]),
-                )
-              ]
-            : <Widget>[]);
   }
 }
 
