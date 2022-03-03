@@ -46,7 +46,7 @@ class _GameScreenState extends State<GameScreen> {
   late chesslib.Chess _chess;
   var _blackAtBottom = false;
   var _lastMoveArrowCoordinates = <String>[];
-  var _whitePlayerType = PlayerType.computer;
+  var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
   var _engineThinking = false;
@@ -231,6 +231,9 @@ class _GameScreenState extends State<GameScreen> {
       _chess = new chesslib.Chess.fromFEN(startPosition);
       _resetGameHistory();
       _lastMoveArrowCoordinates.clear();
+      //todo adapt
+      _whitePlayerType = PlayerType.human;
+      _blackPlayerType = PlayerType.computer;
       _gameStart = true;
       _gameInProgress = true;
     });
@@ -289,8 +292,10 @@ class _GameScreenState extends State<GameScreen> {
     });
     _updateHistoryChildrenWidgets();
     setState(() {
-      _engineThinking = false;
       _gameInProgress = false;
+      _whitePlayerType = PlayerType.computer;
+      _blackPlayerType = PlayerType.computer;
+      _engineThinking = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
