@@ -204,6 +204,10 @@ class _GameScreenState extends State<GameScreen> {
         setState(() {
           _currentGameHistoryNode?.next = nextHistoryNode;
           _currentGameHistoryNode = nextHistoryNode;
+        });
+        _updateHistoryChildrenWidgets();
+
+        setState(() {
           _gameInProgress = false;
         });
 
@@ -278,6 +282,12 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _stopCurrentGame() {
+    final nextHistoryNode = HistoryNode(caption: '*');
+    setState(() {
+      _currentGameHistoryNode?.next = nextHistoryNode;
+      _currentGameHistoryNode = nextHistoryNode;
+    });
+    _updateHistoryChildrenWidgets();
     setState(() {
       _engineThinking = false;
       _gameInProgress = false;
@@ -432,8 +442,10 @@ class _GameScreenState extends State<GameScreen> {
         fen: _chess.fen,
         relatedMove: relatedMove,
       );
-      _currentGameHistoryNode?.next = nextHistoryNode;
-      _currentGameHistoryNode = nextHistoryNode;
+      setState(() {
+        _currentGameHistoryNode?.next = nextHistoryNode;
+        _currentGameHistoryNode = nextHistoryNode;
+      });
       _updateHistoryChildrenWidgets();
     }
   }
@@ -461,6 +473,10 @@ class _GameScreenState extends State<GameScreen> {
         setState(() {
           _currentGameHistoryNode?.next = nextHistoryNode;
           _currentGameHistoryNode = nextHistoryNode;
+        });
+        _updateHistoryChildrenWidgets();
+
+        setState(() {
           _gameInProgress = false;
         });
 
