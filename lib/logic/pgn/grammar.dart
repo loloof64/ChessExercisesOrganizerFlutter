@@ -315,7 +315,7 @@ class PgnGrammarDefinition extends GrammarDefinition {
   Parser semicolon() => string(';');
   Parser quotationMark() => string('"');
   Parser m_string() =>
-      ref0(quotationMark) & string('"').neg().plus() & ref0(quotationMark);
+      ref0(quotationMark) & string('"').neg().star() & ref0(quotationMark);
   Parser stringNoQuot() => pattern('-a-zA-Z0-9.').star();
 
   Parser dateString() =>

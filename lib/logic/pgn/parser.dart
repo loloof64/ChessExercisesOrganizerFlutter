@@ -272,7 +272,8 @@ class PgnParserDefinition extends PgnGrammarDefinition {
 
   @override
   Parser m_string() => super.m_string().map((each) {
-        return each[1].join('');
+        final content = each[1];
+        return content == null ? '' : content.join('');
       });
 
   @override
