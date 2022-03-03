@@ -229,6 +229,7 @@ class _GameScreenState extends State<GameScreen> {
       final startPosition = gameStore.getStartPosition();
       final whiteStartGame = startPosition.split(' ')[1] == 'w';
 
+      _blackAtBottom = !whiteStartGame;
       _lastInputPositionForCpuComputation = '';
       _chess = new chesslib.Chess.fromFEN(startPosition);
       _resetGameHistory();
