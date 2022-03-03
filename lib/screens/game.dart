@@ -324,6 +324,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _purposeStopGame(BuildContext context) {
+    if (!_gameInProgress) return;
     showDialog(
         context: context,
         builder: (BuildContext innerCtx) {
