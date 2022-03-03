@@ -51,6 +51,7 @@ class _GameScreenState extends State<GameScreen> {
   var _stockfish;
   var _engineThinking = false;
   var _gameStart = true;
+  var _lastInputPositionForCpuComputation = '';
   HistoryNode? _gameHistoryTree = null;
   HistoryNode? _currentGameHistoryNode = null;
   HistoryNode? _solutionHistoryTree = null;
@@ -121,10 +122,9 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _initStockfish() async {
     _stockfish = new Stockfish();
     _stockfish.stdout.listen(_processStockfishLine);
-    _waitUntilStockfishReady().then((value) {
-      _stockfish.stdin = 'isready';
-      _makeComputerMove();
-    });
+    await _waitUntilStockfishReady();
+    _stockfish.stdin = 'isready';
+    _restartGame();
   }
 
   Future<void> _waitUntilStockfishReady() async {
@@ -141,6 +141,11 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _makeComputerMove() async {
+    /*
+    Important check !
+    We don't want CPU to compute twice on the same position.
+    */
+    if (_engineThinking) return;
     await _waitUntilStockfishReady();
     final whiteTurn = _chess.turn == chesslib.Color.WHITE;
     final humanTurn = (whiteTurn && (_whitePlayerType == PlayerType.human)) ||
@@ -153,6 +158,15 @@ class _GameScreenState extends State<GameScreen> {
 
     setState(() {
       _engineThinking = true;
+    });
+
+    /*
+    As code is multi-threaded : we don't want CPU to process
+    twice the same position (in a row).
+    */
+    if (_lastInputPositionForCpuComputation == _chess.fen) return;
+    setState(() {
+      _lastInputPositionForCpuComputation = _chess.fen;
     });
 
     _stockfish.stdin = 'position fen ${_chess.fen}';
@@ -206,6 +220,7 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       var gameStore = context.read<GameStore>();
       final startPosition = gameStore.getStartPosition();
+      _lastInputPositionForCpuComputation = '';
       _chess = new chesslib.Chess.fromFEN(startPosition);
       _resetGameHistory();
       _lastMoveArrowCoordinates.clear();
