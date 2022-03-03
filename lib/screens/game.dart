@@ -112,8 +112,13 @@ class _GameScreenState extends State<GameScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: I18nText(
-            'game.solution_loading_error',
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              I18nText(
+                'game.solution_loading_error',
+              ),
+            ],
           ),
         ),
       );
@@ -213,7 +218,12 @@ class _GameScreenState extends State<GameScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: _getGameEndedType(),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _getGameEndedType(),
+              ],
+            ),
           ),
         );
         return;
@@ -306,6 +316,7 @@ class _GameScreenState extends State<GameScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [I18nText('game.stopped')],
         ),
       ),
@@ -493,7 +504,12 @@ class _GameScreenState extends State<GameScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: _getGameEndedType(),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _getGameEndedType(),
+              ],
+            ),
           ),
         );
       }
