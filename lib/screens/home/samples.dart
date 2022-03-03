@@ -21,7 +21,13 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SamplesScreen extends StatelessWidget {
-  final _sampleFiles = <String>['KQ_K', 'K2R_K', 'KR_K', 'KP_K'];
+  final _sampleFiles = <String>[
+    'KQ_K',
+    'K2R_K',
+    'KR_K',
+    'KP_K',
+    'simple_tactics'
+  ];
   final void Function(
       {required String pgnAssetRef, required BuildContext context}) onItemTap;
   SamplesScreen({Key? key, required this.onItemTap}) : super(key: key);

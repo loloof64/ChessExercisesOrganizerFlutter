@@ -31,6 +31,7 @@ sample_games:
     KP_K: "King + Pawn / King"
     KQ_K: "King + Queen / King"
     KR_K: "King + Rook / King"
+    simple_tactics: "Simple tactics"
 game_selector:
     title:  "Game selector"
 game_goal:

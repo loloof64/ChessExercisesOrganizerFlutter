@@ -31,6 +31,7 @@ sample_games:
     KP_K: "Roi + Pion / Roi"
     KQ_K: "Roi + Dame / Roi"
     KR_K: "Roi + Tour / Roi"
+    simple_tactics: "Tactiques simples"
 game_selector:
     title:  "Sélecteur de partie"
 game_goal:

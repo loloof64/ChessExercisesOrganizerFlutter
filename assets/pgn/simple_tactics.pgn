@@ -1,0 +1,25 @@
+[Event "?"]
+[Site "?"]
+[Date "?"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "1-0"]
+[FEN "1k6/p2KP3/1p6/8/4B3/8/8/8 w - - 0 1"]
+[Setup "1"]
+[Goal "#1-0"]
+
+1. e8=Q#  1-0
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "1/2-1/2"]
+[FEN "8/8/7k/8/8/8/K1p1Q3/8 b - - 0 1"]
+[Setup "1"]
+[Goal "1/2-1/2"]
+
+1... c1=N+ 2. Kb2 Nxe2  1/2-1/2
