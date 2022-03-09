@@ -18,6 +18,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
+import 'package:flutter_stateless_chessboard/models/board_arrow.dart';
 
 enum PlayerType {
   human,
@@ -28,7 +29,7 @@ class RichChessboard extends StatelessWidget {
   final String fen;
   final void Function({required ShortMove move}) onMove;
   final BoardColor orientation;
-  final List<String> lastMoveToHighlight;
+  final BoardArrow? lastMoveToHighlight;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
   final Future<PieceType?> Function() onPromote;
@@ -49,7 +50,7 @@ class RichChessboard extends StatelessWidget {
     required this.blackPlayerType,
     required this.onPromote,
     required this.engineThinking,
-    this.lastMoveToHighlight = const [],
+    this.lastMoveToHighlight = null,
   }) : super(key: key);
 
   void _processMove(ShortMove move) {
@@ -115,7 +116,13 @@ class RichChessboard extends StatelessWidget {
               orientation: orientation,
               lastMoveHighlightColor: Colors.indigoAccent.shade200,
               selectionHighlightColor: Colors.greenAccent,
-              lastMove: lastMoveToHighlight,
+              arrows: <BoardArrow>[
+                if (lastMoveToHighlight != null)
+                  BoardArrow(
+                      from: lastMoveToHighlight!.from,
+                      to: lastMoveToHighlight!.to,
+                      color: lastMoveToHighlight!.color)
+              ],
             ),
             SizedBox(
               width: currentPlayerIsHuman() ? 1 : size,

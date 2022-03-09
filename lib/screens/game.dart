@@ -25,6 +25,7 @@ import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
 import 'package:chess_exercises_organizer/components/richboard.dart';
+import 'package:flutter_stateless_chessboard/models/board_arrow.dart';
 import 'package:stockfish/stockfish.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +46,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late chesslib.Chess _chess;
   var _blackAtBottom = false;
-  var _lastMoveArrowCoordinates = <String>[];
+  BoardArrow? _lastMoveArrowCoordinates = null;
   var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
   var _stockfish;
@@ -194,8 +195,8 @@ class _GameScreenState extends State<GameScreen> {
       if (mounted) {
         setState(() {
           _engineThinking = false;
-          _lastMoveArrowCoordinates.clear();
-          _lastMoveArrowCoordinates.addAll([from, to]);
+          _lastMoveArrowCoordinates =
+              BoardArrow(from: from, to: to, color: Colors.blueAccent);
           _addMoveToHistory();
           _gameStart = false;
         });
@@ -243,7 +244,7 @@ class _GameScreenState extends State<GameScreen> {
       _lastInputPositionForCpuComputation = '';
       _chess = new chesslib.Chess.fromFEN(startPosition);
       _resetGameHistory();
-      _lastMoveArrowCoordinates.clear();
+      _lastMoveArrowCoordinates = null;
 
       _whitePlayerType =
           whiteStartGame ? PlayerType.human : PlayerType.computer;
@@ -484,8 +485,8 @@ class _GameScreenState extends State<GameScreen> {
     });
     if (success) {
       setState(() {
-        _lastMoveArrowCoordinates.clear();
-        _lastMoveArrowCoordinates.addAll([move.from, move.to]);
+        _lastMoveArrowCoordinates =
+            BoardArrow(from: move.from, to: move.to, color: Colors.greenAccent);
         _addMoveToHistory();
         _gameStart = false;
       });
@@ -653,7 +654,7 @@ class GameContent extends StatelessWidget {
   final String boardPosition;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
-  final List<String> lastMove;
+  final BoardArrow? lastMove;
   final HistoryNode? historyTree;
   final List<Widget> historyChildren;
   final void Function() initStockfish;

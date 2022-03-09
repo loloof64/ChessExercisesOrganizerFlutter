@@ -126,9 +126,11 @@ packages:
   flutter_stateless_chessboard:
     dependency: "direct main"
     description:
-      name: flutter_stateless_chessboard
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: dev
+      resolved-ref: b5173033fed37311f0e719db620d4fc2865256e5
+      url: "https://github.com/loloof64/flutter_chessboard"
+    source: git
     version: "1.1.2"
   flutter_svg:
     dependency: "direct main"
