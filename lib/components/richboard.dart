@@ -34,6 +34,7 @@ class RichChessboard extends StatelessWidget {
   final PlayerType blackPlayerType;
   final Future<PieceType?> Function() onPromote;
   final bool engineThinking;
+  final bool showCoordinatesZone;
 
   bool currentPlayerIsHuman() {
     final whiteTurn = fen.split(' ')[1] == 'w';
@@ -50,6 +51,7 @@ class RichChessboard extends StatelessWidget {
     required this.blackPlayerType,
     required this.onPromote,
     required this.engineThinking,
+    this.showCoordinatesZone = true,
     this.lastMoveToHighlight = null,
   }) : super(key: key);
 
@@ -78,39 +80,41 @@ class RichChessboard extends StatelessWidget {
         return Stack(
           alignment: Alignment.center,
           children: [
-            Container(
-              color: Colors.indigo.shade300,
-              width: size,
-              height: size,
-              child: Stack(
-                children: [
-                  ...getFilesCoordinates(
-                    boardSize: size,
-                    top: true,
-                    reversed: orientation == BoardColor.BLACK,
-                  ),
-                  ...getFilesCoordinates(
-                    boardSize: size,
-                    top: false,
-                    reversed: orientation == BoardColor.BLACK,
-                  ),
-                  ...getRanksCoordinates(
-                    boardSize: size,
-                    left: true,
-                    reversed: orientation == BoardColor.BLACK,
-                  ),
-                  ...getRanksCoordinates(
-                    boardSize: size,
-                    left: false,
-                    reversed: orientation == BoardColor.BLACK,
-                  ),
-                  _buildPlayerTurn(size: size),
-                ],
-              ),
-            ),
+            showCoordinatesZone
+                ? Container(
+                    color: Colors.indigo.shade300,
+                    width: size,
+                    height: size,
+                    child: Stack(
+                      children: [
+                        ...getFilesCoordinates(
+                          boardSize: size,
+                          top: true,
+                          reversed: orientation == BoardColor.BLACK,
+                        ),
+                        ...getFilesCoordinates(
+                          boardSize: size,
+                          top: false,
+                          reversed: orientation == BoardColor.BLACK,
+                        ),
+                        ...getRanksCoordinates(
+                          boardSize: size,
+                          left: true,
+                          reversed: orientation == BoardColor.BLACK,
+                        ),
+                        ...getRanksCoordinates(
+                          boardSize: size,
+                          left: false,
+                          reversed: orientation == BoardColor.BLACK,
+                        ),
+                        _buildPlayerTurn(size: size),
+                      ],
+                    ),
+                  )
+                : Container(),
             Chessboard(
               fen: fen,
-              size: size * 0.9,
+              size: size * (showCoordinatesZone ? 0.9 : 1.0),
               onMove: _processMove,
               onPromote: onPromote,
               orientation: orientation,
