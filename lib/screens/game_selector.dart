@@ -18,12 +18,11 @@
 
 import 'package:chess_exercises_organizer/screens/game.dart';
 import 'package:flutter/material.dart';
-import 'package:chess_exercises_organizer/components/richboard.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 import 'package:chess_exercises_organizer/stores/game_store.dart';
-import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
+import 'package:simple_chess_board/simple_chess_board.dart';
 
 class GameSelectorScreen extends StatefulWidget {
   static const routeName = 'game-selector';
@@ -81,7 +80,7 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     final fen = gameStore.getStartPosition();
     final isWhiteMove = fen.split(' ')[1] == 'w';
-    final boardOrientation = isWhiteMove ? BoardColor.WHITE : BoardColor.BLACK;
+    final boardOrientation = isWhiteMove ? BoardColor.white : BoardColor.black;
 
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +93,7 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    RichChessboard(
+                    SimpleChessBoard(
                       fen: fen,
                       onMove: ({required ShortMove move}) {},
                       orientation: boardOrientation,
@@ -103,7 +102,6 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                       onPromote: () async {
                         return null;
                       },
-                      engineThinking: false,
                     ),
                     Column(
                       children: [
@@ -127,7 +125,7 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    RichChessboard(
+                    SimpleChessBoard(
                       fen: fen,
                       onMove: ({required ShortMove move}) {},
                       orientation: boardOrientation,
@@ -136,7 +134,6 @@ class _GameSelectorScreenState extends State<GameSelectorScreen> {
                       onPromote: () async {
                         return null;
                       },
-                      engineThinking: false,
                     ),
                     _DataZone(
                       fileTitle: fileTitle,

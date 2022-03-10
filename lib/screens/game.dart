@@ -21,11 +21,10 @@ import 'package:chess_exercises_organizer/logic/history/history_builder.dart';
 import 'package:chess_exercises_organizer/stores/game_store.dart';
 import 'package:chess_exercises_organizer/components/dialog_buttons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import "package:chess/chess.dart" as chesslib;
-import 'package:chess_exercises_organizer/components/richboard.dart';
-import 'package:flutter_stateless_chessboard/models/board_arrow.dart';
+import 'package:simple_chess_board/models/board_arrow.dart';
+import 'package:simple_chess_board/simple_chess_board.dart';
 import 'package:stockfish/stockfish.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:provider/provider.dart';
@@ -377,25 +376,25 @@ class _GameScreenState extends State<GameScreen> {
                     child: whiteTurn
                         ? WhiteQueen(size: pieceSize)
                         : BlackQueen(size: pieceSize),
-                    onTap: () => Navigator.of(context).pop(PieceType.QUEEN),
+                    onTap: () => Navigator.of(context).pop(PieceType.queen),
                   ),
                   InkWell(
                     child: whiteTurn
                         ? WhiteRook(size: pieceSize)
                         : BlackRook(size: pieceSize),
-                    onTap: () => Navigator.of(context).pop(PieceType.ROOK),
+                    onTap: () => Navigator.of(context).pop(PieceType.rook),
                   ),
                   InkWell(
                     child: whiteTurn
                         ? WhiteBishop(size: pieceSize)
                         : BlackBishop(size: pieceSize),
-                    onTap: () => Navigator.of(context).pop(PieceType.BISHOP),
+                    onTap: () => Navigator.of(context).pop(PieceType.bishop),
                   ),
                   InkWell(
                     child: whiteTurn
                         ? WhiteKnight(size: pieceSize)
                         : BlackKnight(size: pieceSize),
-                    onTap: () => Navigator.of(context).pop(PieceType.KNIGHT),
+                    onTap: () => Navigator.of(context).pop(PieceType.knight),
                   ),
                 ],
               ),
@@ -684,21 +683,25 @@ class GameContent extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     final boardOrientation =
-        boardOrientationBlackBottom ? BoardColor.BLACK : BoardColor.WHITE;
+        boardOrientationBlackBottom ? BoardColor.black : BoardColor.white;
     return isInLandscapeMode
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              RichChessboard(
-                engineThinking: engineThinking,
-                fen: boardPosition,
-                onMove: tryMakingMove,
-                orientation: boardOrientation,
-                whitePlayerType: whitePlayerType,
-                blackPlayerType: blackPlayerType,
-                lastMoveToHighlight: lastMove,
-                onPromote: () => handlePromotion(context),
+              Stack(
+                children: [
+                  SimpleChessBoard(
+                    engineThinking: engineThinking,
+                    fen: boardPosition,
+                    onMove: tryMakingMove,
+                    orientation: boardOrientation,
+                    whitePlayerType: whitePlayerType,
+                    blackPlayerType: blackPlayerType,
+                    lastMoveToHighlight: lastMove,
+                    onPromote: () => handlePromotion(context),
+                  ),
+                ],
               ),
               ChessHistory(
                 historyTree: historyTree,
@@ -710,7 +713,7 @@ class GameContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              RichChessboard(
+              SimpleChessBoard(
                 engineThinking: engineThinking,
                 fen: boardPosition,
                 onMove: tryMakingMove,

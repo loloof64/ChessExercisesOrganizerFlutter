@@ -123,15 +123,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_stateless_chessboard:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: dev
-      resolved-ref: b5173033fed37311f0e719db620d4fc2865256e5
-      url: "https://github.com/loloof64/flutter_chessboard"
-    source: git
-    version: "1.1.2"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -275,6 +266,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1+1"
+  simple_chess_board:
+    dependency: "direct main"
+    description:
+      name: simple_chess_board
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -379,5 +377,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.16.0-134.5.beta <3.0.0"
+  dart: ">=2.16.1 <3.0.0"
   flutter: ">=2.4.0-0.0.pre"
