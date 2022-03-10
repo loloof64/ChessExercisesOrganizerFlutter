@@ -1,3 +1,5 @@
+app:
+    title: "Chess exercises"
 buttons:
     ok: "OK"
     cancel: "Cancel"

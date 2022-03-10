@@ -1,3 +1,5 @@
+app:
+    title: "Exercices d'échecs."
 buttons:
     ok: "OK"
     cancel: "Annuler"

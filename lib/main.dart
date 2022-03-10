@@ -40,6 +40,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (context) => GameStore())],
       child: MaterialApp(
+        onGenerateTitle: (context) =>
+            FlutterI18n.translate(context, 'app.title'),
         localizationsDelegates: [
           FlutterI18nDelegate(
             translationLoader: FileTranslationLoader(

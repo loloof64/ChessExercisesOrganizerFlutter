@@ -1,3 +1,5 @@
+app:
+    title: "Ejercicios de ajedrez."
 buttons:
     ok: "De acuerdo"
     cancel: "Cancelar"
